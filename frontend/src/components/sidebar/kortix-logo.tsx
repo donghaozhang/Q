@@ -4,11 +4,11 @@ import Image from 'next/image';
 import { useTheme } from 'next-themes';
 import { useEffect, useState } from 'react';
 
-interface KortixLogoProps {
+interface QuriositiLogoProps {
   size?: number;
 }
-export function KortixLogo({ size = 24 }: KortixLogoProps) {
-  const { theme, systemTheme } = useTheme();
+export function KortixLogo({ size = 24 }: QuriositiLogoProps) {
+  const { theme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
   // After mount, we can access the theme
@@ -16,17 +16,16 @@ export function KortixLogo({ size = 24 }: KortixLogoProps) {
     setMounted(true);
   }, []);
 
-  const shouldInvert = mounted && (
-    theme === 'dark' || (theme === 'system' && systemTheme === 'dark')
-  );
+  // Use proper light/dark mode logos instead of CSS invert
+  const logoSrc = mounted && theme === 'dark' ? '/kortix-logo-white.svg' : '/kortix-symbol.svg';
 
   return (
     <Image
-        src="/kortix-symbol.svg"
-        alt="Kortix"
+        src={logoSrc}
+        alt="Quriosity"
         width={size}
         height={size}
-        className={`${shouldInvert ? 'invert' : ''} flex-shrink-0`}
+        className="flex-shrink-0"
       />
   );
 }
