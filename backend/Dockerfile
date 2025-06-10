@@ -1,17 +1,33 @@
-FROM ghcr.io/astral-sh/uv:python3.11-alpine
+FROM python:3.11
 
-ENV ENV_MODE production
+# Set environment variables for Python and locale
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    ENV_MODE="production" \
+    DEBIAN_FRONTEND=noninteractive \
+    LANG=C.UTF-8 \
+    LC_ALL=C.UTF-8 \
+    PYTHONIOENCODING=utf-8
+
 WORKDIR /app
 
-RUN apk add --no-cache curl
+# Create non-root user and set up directories
+RUN useradd -m -u 1000 appuser && \
+    mkdir -p /app/logs && \
+    chown -R appuser:appuser /app
 
 # Install Python dependencies
-COPY pyproject.toml uv.lock ./
-ENV UV_LINK_MODE=copy
-RUN --mount=type=cache,target=/root/.cache/uv uv sync --locked --quiet
+COPY --chown=appuser:appuser requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt gunicorn
+
+# Switch to non-root user
+USER appuser
 
 # Copy application code
-COPY . .
+COPY --chown=appuser:appuser . .
+
+# Expose the port the app runs on
+EXPOSE 8000
 
 # Calculate optimal worker count based on 16 vCPUs
 # Using (2*CPU)+1 formula for CPU-bound applications
@@ -19,26 +35,23 @@ ENV WORKERS=33
 ENV THREADS=2
 ENV WORKER_CONNECTIONS=2000
 
-ENV PYTHONPATH=/app
-EXPOSE 8000
-
 # Gunicorn configuration
-CMD ["sh", "-c", "uv run gunicorn api:app \
-  --workers $WORKERS \
-  --worker-class uvicorn.workers.UvicornWorker \
-  --bind 0.0.0.0:8000 \
-  --timeout 1800 \
-  --graceful-timeout 600 \
-  --keep-alive 1800 \
-  --max-requests 0 \
-  --max-requests-jitter 0 \
-  --forwarded-allow-ips '*' \
-  --worker-connections $WORKER_CONNECTIONS \
-  --worker-tmp-dir /dev/shm \
-  --preload \
-  --log-level info \
-  --access-logfile - \
-  --error-logfile - \
-  --capture-output \
-  --enable-stdio-inheritance \
-  --threads $THREADS"]
+CMD ["sh", "-c", "gunicorn api:app \
+     --workers $WORKERS \
+     --worker-class uvicorn.workers.UvicornWorker \
+     --bind 0.0.0.0:8000 \
+     --timeout 1800 \
+     --graceful-timeout 600 \
+     --keep-alive 1800 \
+     --max-requests 0 \
+     --max-requests-jitter 0 \
+     --forwarded-allow-ips '*' \
+     --worker-connections $WORKER_CONNECTIONS \
+     --worker-tmp-dir /dev/shm \
+     --preload \
+     --log-level info \
+     --access-logfile - \
+     --error-logfile - \
+     --capture-output \
+     --enable-stdio-inheritance \
+     --threads $THREADS"]
