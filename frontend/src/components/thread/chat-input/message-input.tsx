@@ -8,6 +8,7 @@ import { FileUploadHandler } from './file-upload-handler';
 import { VoiceRecorder } from './voice-recorder';
 import { ModelSelector } from './model-selector';
 import { ChatSettingsDropdown } from './chat-settings-dropdown';
+import { MediaModelSelector } from './media-model-selector';
 import { SubscriptionStatus } from './_use-model-selection';
 import { isLocalMode } from '@/lib/config';
 import { useFeatureFlag } from '@/lib/feature-flags';
@@ -46,6 +47,10 @@ interface MessageInputProps {
   refreshCustomModels?: () => void;
   selectedAgentId?: string;
   onAgentSelect?: (agentId: string | undefined) => void;
+  
+  // Media model props
+  selectedMediaModel: string;
+  onMediaModelChange: (model: string) => void;
 }
 
 export const MessageInput = forwardRef<HTMLTextAreaElement, MessageInputProps>(
@@ -81,6 +86,9 @@ export const MessageInput = forwardRef<HTMLTextAreaElement, MessageInputProps>(
 
       selectedAgentId,
       onAgentSelect,
+      
+      selectedMediaModel,
+      onMediaModelChange,
     },
     ref,
   ) => {
@@ -175,6 +183,11 @@ export const MessageInput = forwardRef<HTMLTextAreaElement, MessageInputProps>(
           }
 
           <div className='flex items-center gap-2'>
+            <MediaModelSelector
+              selectedModel={selectedMediaModel}
+              onModelChange={onMediaModelChange}
+              disabled={loading || (disabled && !isAgentRunning)}
+            />
             {/* Show model selector inline if custom agents are disabled, otherwise show settings dropdown */}
             {!customAgentsEnabled || flagsLoading ? (
               <ModelSelector

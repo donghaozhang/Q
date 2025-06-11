@@ -66,6 +66,7 @@ async def run_agent_background(
     is_agent_builder: Optional[bool] = False,
     target_agent_id: Optional[str] = None,
     request_id: Optional[str] = None,
+    media_model: Optional[str] = None
 ):
     """Run the agent in the background using Redis for state."""
     structlog.contextvars.clear_contextvars()
@@ -171,6 +172,10 @@ async def run_agent_background(
         # Ensure active run key exists and has TTL
         await redis.set(instance_active_key, "running", ex=redis.REDIS_KEY_TTL)
 
+
+        # Set the selected media model as an environment variable for the FalMediaTool
+        if media_model:
+            os.environ['SELECTED_MEDIA_MODEL'] = media_model
 
         # Initialize agent generator
         agent_gen = run_agent(
