@@ -419,6 +419,7 @@ export function ToolCallSidePanel({
 
   if (isLoading) {
     return (
+<<<<<<< HEAD
       <div className="fixed inset-0 z-30 pointer-events-none">
         <div className="p-4 h-full flex items-stretch justify-end pointer-events-auto">
           <div
@@ -456,6 +457,26 @@ export function ToolCallSidePanel({
                     <Skeleton className="h-40 w-full rounded-md" />
                     <Skeleton className="h-20 w-full rounded-md" />
                   </div>
+=======
+      <div
+        className={cn(
+          'fixed inset-y-0 right-0 border-l flex flex-col z-30 h-screen transition-all duration-200 ease-in-out',
+          isMobile
+            ? 'w-full'
+            : 'w-[90%] sm:w-[450px] md:w-[500px] lg:w-[550px] xl:w-[650px]',
+          !isOpen && 'translate-x-full',
+        )}
+      >
+        <div className="flex-1 flex flex-col overflow-hidden bg-background">
+          <div className="flex flex-col h-full">
+            <div className="pt-4 pl-4 pr-4">
+              <div className="flex items-center justify-between">
+                <div className="ml-2 flex items-center gap-2">
+                  <Computer className="h-4 w-4" />
+                  <h2 className="text-md font-medium text-zinc-900 dark:text-zinc-100">
+                    {agentName ? `${agentName}'s Computer` : 'Q\'s Computer'}
+                  </h2>
+>>>>>>> 916245ae (feat(branding): Update computer panel title from Suna to Q)
                 </div>
               </div>
             </div>
@@ -472,8 +493,9 @@ export function ToolCallSidePanel({
           <div className="pt-4 pl-4 pr-4">
             <div className="flex items-center justify-between">
               <div className="ml-2 flex items-center gap-2">
-                <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
-                  {agentName ? `${agentName}'s Computer` : 'Suna\'s Computer'}
+                <Computer className="h-4 w-4" />
+                <h2 className="text-md font-medium text-zinc-900 dark:text-zinc-100">
+                  {agentName ? `${agentName}'s Computer` : 'Q\'s Computer'}
                 </h2>
               </div>
               <Button
@@ -518,8 +540,14 @@ export function ToolCallSidePanel({
             <div className="pt-4 pl-4 pr-4">
               <div className="flex items-center justify-between">
                 <div className="ml-2 flex items-center gap-2">
+<<<<<<< HEAD
                   <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
                     {agentName ? `${agentName}'s Computer` : 'Suna\'s Computer'}
+=======
+                  <Computer className="h-4 w-4" />
+                  <h2 className="text-md font-medium text-zinc-900 dark:text-zinc-100">
+                    {agentName ? `${agentName}'s Computer` : 'Q\'s Computer'}
+>>>>>>> 916245ae (feat(branding): Update computer panel title from Suna to Q)
                   </h2>
                 </div>
                 <div className="flex items-center gap-2">
@@ -564,8 +592,9 @@ export function ToolCallSidePanel({
           <div className="pt-4 pl-4 pr-4">
             <div className="flex items-center justify-between">
               <div className="ml-2 flex items-center gap-2">
-                <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
-                  {agentName ? `${agentName}'s Computer` : 'Suna\'s Computer'}
+                <Computer className="h-4 w-4" />
+                <h2 className="text-md font-medium text-zinc-900 dark:text-zinc-100">
+                  {agentName ? `${agentName}'s Computer` : 'Q\'s Computer'}
                 </h2>
               </div>
               <Button
@@ -613,11 +642,12 @@ export function ToolCallSidePanel({
           className="p-3"
         >
           <div className="flex items-center justify-between">
-            <motion.div layoutId="tool-icon" className="ml-2 flex items-center gap-2">
-              <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
-                {agentName ? `${agentName}'s Computer` : 'Suna\'s Computer'}
+            <div className="ml-2 flex items-center gap-2">
+              <Computer className="h-4 w-4" />
+              <h2 className="text-md font-medium text-zinc-900 dark:text-zinc-100">
+                {agentName ? `${agentName}'s Computer` : 'Q\'s Computer'}
               </h2>
-            </motion.div>
+            </div>
 
             {displayToolCall.toolResult?.content && !isStreaming && (
               <div className="flex items-center gap-2">
