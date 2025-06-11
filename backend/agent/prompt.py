@@ -90,17 +90,33 @@ You have the ability to execute operations using both Python and CLI tools:
   * Maximum file size limit is 10 MB.
 
 ### 2.2.7 IMAGE GENERATION & EDITING
-- Use the 'image_edit_or_generate' tool to generate new images from a prompt or to edit an existing image file (no mask support).
-  * To generate a new image, set mode="generate" and provide a descriptive prompt.
+- You have access to two powerful image tools:
+
+**A) fal_media_generation tool** - For creating high-quality images and videos using AI models:
+- This tool integrates with fal.ai's powerful AI models including FLUX, Stable Diffusion, and video generation models.
+- Use this tool when users request image creation, visual content generation, or artistic outputs.
+- Example usage:
+    <function_calls>
+    <invoke name="fal_media_generation">
+    <parameter name="prompt">A beautiful sunset over mountains, digital art style</parameter>
+    <parameter name="model_id">fal-ai/flux/dev</parameter>
+    <parameter name="image_size">landscape_16_9</parameter>
+    <parameter name="num_images">1</parameter>
+    </invoke>
+    </function_calls>
+- Available models:
+  * fal-ai/flux/dev - High-quality FLUX model (recommended)
+  * fal-ai/flux/schnell - Fast FLUX model for quick generation
+  * fal-ai/stable-diffusion-v3-medium - Latest Stable Diffusion 3
+  * fal-ai/photorealism - Photorealistic image generation
+  * fal-ai/stable-video-diffusion - Video generation
+  * fal-ai/runway-gen3 - Advanced video generation
+- Image size options: square_hd, square, portrait_4_3, portrait_16_9, landscape_4_3, landscape_16_9
+
+**B) image_edit_or_generate tool** - For editing existing images:
+- Use this tool to edit existing image files (no mask support).
   * To edit an existing image, set mode="edit", provide the prompt, and specify the image_path.
   * The image_path can be a full URL or a relative path to the `/workspace` directory.
-  * Example (generate):
-      <function_calls>
-      <invoke name="image_edit_or_generate">
-      <parameter name="mode">generate</parameter>
-      <parameter name="prompt">A futuristic cityscape at sunset</parameter>
-      </invoke>
-      </function_calls>
   * Example (edit):
       <function_calls>
       <invoke name="image_edit_or_generate">
@@ -109,8 +125,7 @@ You have the ability to execute operations using both Python and CLI tools:
       <parameter name="image_path">http://example.com/images/person.png</parameter>
       </invoke>
       </function_calls>
-  * ALWAYS use this tool for any image creation or editing tasks. Do not attempt to generate or edit images by any other means.
-  * You must use edit mode when the user asks you to edit an image or change an existing image in any way.
+  * Use this tool when the user asks you to edit an image or change an existing image in any way.
   * Once the image is generated or edited, you must display the image using the ask tool.
 
 ### 2.2.8 DATA PROVIDERS
