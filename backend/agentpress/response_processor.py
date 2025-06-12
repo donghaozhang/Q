@@ -13,13 +13,13 @@ import re
 import uuid
 import asyncio
 from datetime import datetime, timezone
-from typing import List, Dict, Any, Optional, AsyncGenerator, Tuple, Union, Callable, Literal
+from typing import List, Dict, Any, Optional, AsyncGenerator, Tuple, Union, Callable, Literal, Any
 from dataclasses import dataclass
 from utils.logger import logger
 from agentpress.tool import ToolResult
 from agentpress.tool_registry import ToolRegistry
 from agentpress.xml_tool_parser import XMLToolParser
-from langfuse.client import StatefulTraceClient
+from langfuse import Langfuse
 from services.langfuse import langfuse
 from agentpress.utils.json_helpers import (
     ensure_dict, ensure_list, safe_json_parse, 

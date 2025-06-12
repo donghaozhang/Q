@@ -22,7 +22,7 @@ from agentpress.response_processor import (
 )
 from services.supabase import DBConnection
 from utils.logger import logger
-from langfuse.client import StatefulGenerationClient, StatefulTraceClient
+from langfuse import Langfuse
 from services.langfuse import langfuse
 import datetime
 from litellm.utils import token_counter
@@ -207,7 +207,7 @@ class ThreadManager:
         enable_thinking: Optional[bool] = False,
         reasoning_effort: Optional[str] = 'low',
         enable_context_manager: bool = True,
-        generation: Optional[StatefulGenerationClient] = None,
+        generation: Optional[Any] = None,
     ) -> Union[Dict[str, Any], AsyncGenerator]:
         """Run a conversation thread with LLM integration and tool execution.
 
