@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery, useQueries } from '@tanstack/react-query';
-import { getApiUrl } from '@/lib/api';
+import { getApiUrl } from '@/lib/utils/getApiUrl';
 
 export interface FeatureFlag {
   flag_name: string;
