@@ -1,7 +1,6 @@
 import React from 'react';
 import { useQuery, useQueries } from '@tanstack/react-query';
-
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+import { getApiUrl } from '@/lib/api';
 
 export interface FeatureFlag {
   flag_name: string;
@@ -39,7 +38,7 @@ export class FeatureFlagManager {
       if (cached && Date.now() - cached.timestamp < CACHE_DURATION) {
         return cached.value;
       }
-      const response = await fetch(`${API_URL}/feature-flags/${flagName}`, {
+      const response = await fetch(getApiUrl(`/feature-flags/${flagName}`), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -66,7 +65,7 @@ export class FeatureFlagManager {
   
   async getFlagDetails(flagName: string): Promise<FeatureFlag | null> {
     try {
-      const response = await fetch(`${API_URL}/feature-flags/${flagName}`, {
+      const response = await fetch(getApiUrl(`/feature-flags/${flagName}`), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -92,7 +91,7 @@ export class FeatureFlagManager {
         return globalFlagsCache.flags;
       }
       
-      const response = await fetch(`${API_URL}/feature-flags`, {
+      const response = await fetch(getApiUrl(`/feature-flags`), {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -173,7 +172,7 @@ export const featureFlagKeys = {
 
 // Query functions
 const fetchFeatureFlag = async (flagName: string): Promise<boolean> => {
-  const response = await fetch(`${API_URL}/feature-flags/${flagName}`, {
+  const response = await fetch(getApiUrl(`/feature-flags/${flagName}`), {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -189,7 +188,7 @@ const fetchFeatureFlag = async (flagName: string): Promise<boolean> => {
 };
 
 const fetchFeatureFlagDetails = async (flagName: string): Promise<FeatureFlag> => {
-  const response = await fetch(`${API_URL}/feature-flags/${flagName}`, {
+  const response = await fetch(getApiUrl(`/feature-flags/${flagName}`), {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -205,7 +204,7 @@ const fetchFeatureFlagDetails = async (flagName: string): Promise<FeatureFlag> =
 };
 
 const fetchAllFeatureFlags = async (): Promise<Record<string, boolean>> => {
-  const response = await fetch(`${API_URL}/feature-flags`, {
+  const response = await fetch(getApiUrl(`/feature-flags`), {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
