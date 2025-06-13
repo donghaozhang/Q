@@ -1,7 +1,6 @@
 import { createClient } from "@/lib/supabase/client";
 import { isFlagEnabled } from "@/lib/feature-flags";
-
-const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+import { getApiUrl } from "@/lib/api";
 
 export type Agent = {
   agent_id: string;
@@ -151,7 +150,7 @@ export const getAgents = async (params: AgentsParams = {}): Promise<AgentsRespon
     if (params.has_agentpress_tools !== undefined) queryParams.append('has_agentpress_tools', params.has_agentpress_tools.toString());
     if (params.tools) queryParams.append('tools', params.tools);
 
-    const url = `${API_URL}/agents${queryParams.toString() ? `?${queryParams.toString()}` : ''}`;
+    const url = getApiUrl(`/agents${queryParams.toString() ? `?${queryParams.toString()}` : ''}`);
 
     const response = await fetch(url, {
       method: 'GET',
@@ -188,7 +187,7 @@ export const getAgent = async (agentId: string): Promise<Agent> => {
       throw new Error('You must be logged in to get agent details');
     }
 
-    const response = await fetch(`${API_URL}/agents/${agentId}`, {
+    const response = await fetch(getApiUrl(`/agents/${agentId}`), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -223,7 +222,7 @@ export const createAgent = async (agentData: AgentCreateRequest): Promise<Agent>
       throw new Error('You must be logged in to create an agent');
     }
 
-    const response = await fetch(`${API_URL}/agents`, {
+    const response = await fetch(getApiUrl('/agents'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -259,7 +258,7 @@ export const updateAgent = async (agentId: string, agentData: AgentUpdateRequest
       throw new Error('You must be logged in to update an agent');
     }
 
-    const response = await fetch(`${API_URL}/agents/${agentId}`, {
+    const response = await fetch(getApiUrl(`/agents/${agentId}`), {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -295,7 +294,7 @@ export const deleteAgent = async (agentId: string): Promise<void> => {
       throw new Error('You must be logged in to delete an agent');
     }
 
-    const response = await fetch(`${API_URL}/agents/${agentId}`, {
+    const response = await fetch(getApiUrl(`/agents/${agentId}`), {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
@@ -328,7 +327,7 @@ export const getThreadAgent = async (threadId: string): Promise<ThreadAgentRespo
       throw new Error('You must be logged in to get thread agent');
     }
 
-    const response = await fetch(`${API_URL}/thread/${threadId}/agent`, {
+    const response = await fetch(getApiUrl(`/thread/${threadId}/agent`), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -363,7 +362,7 @@ export const getAgentBuilderChatHistory = async (agentId: string): Promise<{mess
       throw new Error('You must be logged in to get agent builder chat history');
     }
 
-    const response = await fetch(`${API_URL}/agents/${agentId}/builder-chat-history`, {
+    const response = await fetch(getApiUrl(`/agents/${agentId}/builder-chat-history`), {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -434,7 +433,7 @@ export const startAgentBuilderChat = async (
       throw new Error('You must be logged in to use the agent builder');
     }
 
-    const response = await fetch(`${API_URL}/agents/builder/chat/${request.agent_id}`, {
+    const response = await fetch(getApiUrl(`/agents/builder/chat/${request.agent_id}`), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
