@@ -277,7 +277,7 @@ export const getProject = async (projectId: string): Promise<Project> => {
 
           console.log(`Ensuring sandbox is active for project ${projectId}...`);
           const response = await fetch(
-            `${API_URL}/project/${projectId}/sandbox/ensure-active`,
+            getApiUrl(`/project/${projectId}/sandbox/ensure-active`),
             {
               method: 'POST',
               headers,
@@ -648,7 +648,7 @@ export const startAgent = async (
     }
 
     console.log(
-      `[API] Starting agent for thread ${threadId} using ${API_URL}/thread/${threadId}/agent/start`,
+              `[API] Starting agent for thread ${threadId} using ${getApiUrl(`/thread/${threadId}/agent/start`)}`,
     );
 
     const defaultOptions = {
@@ -673,7 +673,7 @@ export const startAgent = async (
       body.agent_id = finalOptions.agent_id;
     }
 
-    const response = await fetch(`${API_URL}/thread/${threadId}/agent/start`, {
+    const response = await fetch(getApiUrl(`/thread/${threadId}/agent/start`), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -778,7 +778,7 @@ export const stopAgent = async (agentRunId: string): Promise<void> => {
     throw authError;
   }
 
-  const response = await fetch(`${API_URL}/agent-run/${agentRunId}/stop`, {
+      const response = await fetch(getApiUrl(`/agent-run/${agentRunId}/stop`), {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -817,7 +817,7 @@ export const getAgentStatus = async (agentRunId: string): Promise<AgentRun> => {
       throw new NoAccessTokenAvailableError();
     }
 
-    const url = `${API_URL}/agent-run/${agentRunId}`;
+    const url = getApiUrl(`/agent-run/${agentRunId}`);
     console.log(`[API] Fetching from: ${url}`);
 
     const response = await fetch(url, {
@@ -874,7 +874,7 @@ export const getAgentRuns = async (threadId: string): Promise<AgentRun[]> => {
       throw new NoAccessTokenAvailableError();
     }
 
-    const response = await fetch(`${API_URL}/thread/${threadId}/agent-runs`, {
+    const response = await fetch(getApiUrl(`/thread/${threadId}/agent-runs`), {
       headers: {
         Authorization: `Bearer ${session.access_token}`,
       },
@@ -986,7 +986,7 @@ export const streamAgent = (
         return;
       }
 
-      const url = new URL(`${API_URL}/agent-run/${agentRunId}/stream`);
+      const url = new URL(getApiUrl(`/agent-run/${agentRunId}/stream`));
       url.searchParams.append('token', session.access_token);
 
       console.log(`[STREAM] Creating EventSource for ${agentRunId}`);
@@ -1213,7 +1213,7 @@ export const createSandboxFile = async (
       headers['Authorization'] = `Bearer ${session.access_token}`;
     }
 
-    const response = await fetch(`${API_URL}/sandboxes/${sandboxId}/files`, {
+    const response = await fetch(getApiUrl(`/sandboxes/${sandboxId}/files`), {
       method: 'POST',
       headers,
       body: formData,
@@ -1262,7 +1262,7 @@ export const createSandboxFileJson = async (
     }
 
     const response = await fetch(
-      `${API_URL}/sandboxes/${sandboxId}/files/json`,
+      getApiUrl(`/sandboxes/${sandboxId}/files/json`),
       {
         method: 'POST',
         headers,
@@ -1318,7 +1318,7 @@ export const listSandboxFiles = async (
       data: { session },
     } = await supabase.auth.getSession();
 
-    const url = new URL(`${API_URL}/sandboxes/${sandboxId}/files`);
+    const url = new URL(getApiUrl(`/sandboxes/${sandboxId}/files`));
     
     // Normalize the path to handle Unicode escape sequences
     const normalizedPath = normalizePathWithUnicode(path);
@@ -1367,7 +1367,7 @@ export const getSandboxFileContent = async (
       data: { session },
     } = await supabase.auth.getSession();
 
-    const url = new URL(`${API_URL}/sandboxes/${sandboxId}/files/content`);
+    const url = new URL(getApiUrl(`/sandboxes/${sandboxId}/files/content`));
     
     // Normalize the path to handle Unicode escape sequences
     const normalizedPath = normalizePathWithUnicode(path);
@@ -1513,10 +1513,10 @@ export const initiateAgent = async (
     }
 
     console.log(
-      `[API] Initiating agent with files using ${API_URL}/agent/initiate`,
+              `[API] Initiating agent with files using ${getApiUrl('/agent/initiate')}`,
     );
 
-    const response = await fetch(`${API_URL}/agent/initiate`, {
+    const response = await fetch(getApiUrl('/agent/initiate'), {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${session.access_token}`,
@@ -1570,7 +1570,7 @@ export const initiateAgent = async (
 
 export const checkApiHealth = async (): Promise<HealthCheckResponse> => {
   try {
-    const response = await fetch(`${API_URL}/health`, {
+    const response = await fetch(getApiUrl('/health'), {
       cache: 'no-store',
     });
 
@@ -1706,11 +1706,10 @@ export const createCheckoutSession = async (
       throw new NoAccessTokenAvailableError();
     }
     
-    
     const requestBody = { ...request, tolt_referral: window.tolt_referral };
     console.log('Tolt Referral ID:', requestBody.tolt_referral);
-    
-    const response = await fetch(`${API_URL}/billing/create-checkout-session`, {
+
+    const response = await fetch(getApiUrl('/billing/create-checkout-session'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1777,7 +1776,7 @@ export const createPortalSession = async (
       throw new NoAccessTokenAvailableError();
     }
 
-    const response = await fetch(`${API_URL}/billing/create-portal-session`, {
+    const response = await fetch(getApiUrl('/billing/create-portal-session'), {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -1819,7 +1818,7 @@ export const getSubscription = async (): Promise<SubscriptionStatus> => {
       throw new NoAccessTokenAvailableError();
     }
 
-    const response = await fetch(`${API_URL}/billing/subscription`, {
+    const response = await fetch(getApiUrl('/billing/subscription'), {
       headers: {
         Authorization: `Bearer ${session.access_token}`,
       },
@@ -1861,7 +1860,7 @@ export const getAvailableModels = async (): Promise<AvailableModelsResponse> => 
       throw new NoAccessTokenAvailableError();
     }
 
-    const response = await fetch(`${API_URL}/billing/available-models`, {
+    const response = await fetch(getApiUrl('/billing/available-models'), {
       headers: {
         Authorization: `Bearer ${session.access_token}`,
       },
@@ -1904,7 +1903,7 @@ export const checkBillingStatus = async (): Promise<BillingStatusResponse> => {
       throw new NoAccessTokenAvailableError();
     }
 
-    const response = await fetch(`${API_URL}/billing/check-status`, {
+    const response = await fetch(getApiUrl('/billing/check-status'), {
       headers: {
         Authorization: `Bearer ${session.access_token}`,
       },
@@ -1954,7 +1953,7 @@ export const transcribeAudio = async (audioFile: File): Promise<TranscriptionRes
     const formData = new FormData();
     formData.append('audio_file', audioFile);
 
-    const response = await fetch(`${API_URL}/transcription`, {
+    const response = await fetch(getApiUrl('/transcription'), {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${session.access_token}`,
@@ -1997,7 +1996,7 @@ export const getAgentBuilderChatHistory = async (agentId: string): Promise<{mess
     throw new NoAccessTokenAvailableError();
   }
 
-  const response = await fetch(`${API_URL}/agents/${agentId}/builder-chat-history`, {
+  const response = await fetch(getApiUrl(`/agents/${agentId}/builder-chat-history`), {
     headers: {
       Authorization: `Bearer ${session.access_token}`,
     },
