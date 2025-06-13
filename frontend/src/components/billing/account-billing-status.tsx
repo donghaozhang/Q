@@ -4,12 +4,38 @@ import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { PricingSection } from '@/components/home/sections/pricing-section';
 import { isLocalMode } from '@/lib/config';
-import { createPortalSession } from '@/lib/api';
+import {
+  SubscriptionStatus,
+} from '@/lib/api';
 import { useAuth } from '@/components/AuthProvider';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useSubscription } from '@/hooks/react-query';
 import Link from 'next/link';
 import { OpenInNewWindowIcon } from '@radix-ui/react-icons';
+
+// Mock functions to prevent 404 errors
+const getMockSubscription = async (): Promise<SubscriptionStatus> => {
+  console.log('[BILLING] Using mock subscription data - billing disabled');
+  return {
+    status: 'active',
+    plan_name: 'free',
+    price_id: 'free',
+    current_period_end: null,
+    cancel_at_period_end: false,
+    trial_end: null,
+    minutes_limit: 999999,
+    current_usage: 0,
+    has_schedule: false,
+    scheduled_plan_name: null,
+    scheduled_price_id: null,
+    scheduled_change_date: null,
+  };
+};
+
+const createMockPortalSession = async (params: { return_url: string }) => {
+  console.log('[BILLING] Portal session disabled - billing disabled');
+  return { url: '#' };
+};
 
 type Props = {
   accountId: string;
@@ -20,17 +46,44 @@ export default function AccountBillingStatus({ accountId, returnUrl }: Props) {
   const { session, isLoading: authLoading } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isManaging, setIsManaging] = useState(false);
+<<<<<<< HEAD
   const {
     data: subscriptionData,
     isLoading,
     error: subscriptionQueryError,
   } = useSubscription();
+=======
+
+  useEffect(() => {
+    async function fetchSubscription() {
+      if (authLoading || !session) return;
+
+      try {
+        const data = await getMockSubscription(); // Use mock instead of real API
+        setSubscriptionData(data);
+        setError(null);
+      } catch (err) {
+        console.error('Failed to get subscription:', err);
+        setError(
+          err instanceof Error
+            ? err.message
+            : 'Failed to load subscription data',
+        );
+      } finally {
+        setIsLoading(false);
+      }
+    }
+
+    fetchSubscription();
+  }, [session, authLoading]);
+>>>>>>> 19c18255 (fix: Replace all direct billing API calls with mocks to prevent 404 errors)
 
   const handleManageSubscription = async () => {
     try {
       setIsManaging(true);
-      const { url } = await createPortalSession({ return_url: returnUrl });
-      window.location.href = url;
+      const { url } = await createMockPortalSession({ return_url: returnUrl }); // Use mock instead of real API
+      console.log('[BILLING] Would redirect to portal:', url);
+      // Don't actually redirect when billing is disabled
     } catch (err) {
       console.error('Failed to create portal session:', err);
       setError(

@@ -557,6 +557,37 @@ export function PricingSection({
   const isAuthenticated = !!subscriptionData && subscriptionQueryError === null;
   const currentSubscription = subscriptionData || null;
 
+  const fetchCurrentPlan = async () => {
+    setIsFetchingPlan(true);
+    try {
+      // Mock subscription data to prevent 404 errors
+      console.log('[BILLING] Using mock subscription data - billing disabled');
+      const subscriptionData: SubscriptionStatus = {
+        status: 'active',
+        plan_name: 'free',
+        price_id: 'free',
+        current_period_end: null,
+        cancel_at_period_end: false,
+        trial_end: null,
+        minutes_limit: 999999,
+        current_usage: 0,
+        has_schedule: false,
+        scheduled_plan_name: null,
+        scheduled_price_id: null,
+        scheduled_change_date: null,
+      };
+      console.log('Fetched Subscription Status:', subscriptionData);
+      setCurrentSubscription(subscriptionData);
+      setIsAuthenticated(true);
+    } catch (error) {
+      console.error('Error fetching subscription:', error);
+      setCurrentSubscription(null);
+      setIsAuthenticated(false);
+    } finally {
+      setIsFetchingPlan(false);
+    }
+  };
+
   // Determine default billing period based on user's current subscription
   const getDefaultBillingPeriod = (): 'monthly' | 'yearly' => {
     if (!isAuthenticated || !currentSubscription) {
