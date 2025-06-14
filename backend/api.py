@@ -125,14 +125,18 @@ async def log_requests_middleware(request: Request, call_next):
         raise
 
 # Define allowed origins based on environment
-allowed_origins = ["https://www.suna.so", "https://suna.so"]
-allow_origin_regex = None
+allowed_origins = [
+    "https://www.suna.so",
+    "https://suna.so",
+    "http://localhost:3000",
+]
 
-# Add Railway deployment origins
-allowed_origins.extend([
-    "https://frontend-production-cfc7.up.railway.app",
-    "https://backend-production-65beb.up.railway.app"
-])
+# If FRONTEND_URL env var is provided, include it explicitly.
+import os
+
+frontend_url_env = os.getenv("FRONTEND_URL") or os.getenv("NEXT_PUBLIC_URL")
+if frontend_url_env:
+    allowed_origins.append(frontend_url_env.rstrip("/"))
 
 # Add staging-specific origins
 if config.ENV_MODE == EnvMode.LOCAL:
@@ -141,14 +145,13 @@ if config.ENV_MODE == EnvMode.LOCAL:
 # Add staging-specific origins
 if config.ENV_MODE == EnvMode.STAGING:
     allowed_origins.append("https://staging.suna.so")
-    allowed_origins.append("http://localhost:3000")
-    allow_origin_regex = r"https://suna-.*-prjcts\.vercel\.app"
 
-# Add Railway regex pattern for any Railway deployments
-if allow_origin_regex:
-    allow_origin_regex = f"{allow_origin_regex}|https://.*\.up\.railway\.app"
-else:
-    allow_origin_regex = r"https://.*\.up\.railway\.app"
+# Allow any Railway *.up.railway.app subdomain (useful for preview / prod deploys)
+allow_origin_regex = r"https://.*\.up\.railway\.app"
+
+# Add staging regex pattern for Vercel deploys if in staging mode
+if config.ENV_MODE == EnvMode.STAGING:
+    allow_origin_regex = f"{allow_origin_regex}|https://suna-.*-prjcts\.vercel\.app"
 
 app.add_middleware(
     CORSMiddleware,
