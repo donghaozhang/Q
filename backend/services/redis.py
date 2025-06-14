@@ -5,6 +5,7 @@ import asyncio
 from utils.logger import logger
 from typing import List, Any
 from utils.retry import retry
+from urllib.parse import urlparse
 
 # Redis client and connection pool
 client: redis.Redis | None = None
@@ -23,10 +24,30 @@ def initialize():
     # Load environment variables if not already loaded
     load_dotenv()
 
-    # Get Redis configuration
-    redis_host = os.getenv("REDIS_HOST", "redis")
-    redis_port = int(os.getenv("REDIS_PORT", 6379))
-    redis_password = os.getenv("REDIS_PASSWORD", "")
+    # Check if REDIS_URL is provided (common in cloud deployments)
+    redis_url = os.getenv("REDIS_URL")
+    
+    if redis_url:
+        # Parse Redis URL (e.g., redis://user:pass@host:port/db or rediss://... for SSL)
+        parsed = urlparse(redis_url)
+        redis_host = parsed.hostname or "redis"
+        redis_port = parsed.port or 6379
+        redis_password = parsed.password or ""
+        redis_ssl = parsed.scheme == "rediss"
+        redis_db = int(parsed.path.lstrip('/')) if parsed.path and parsed.path != '/' else 0
+        
+        logger.info(f"Using REDIS_URL for connection to {redis_host}:{redis_port} (SSL: {redis_ssl})")
+    else:
+        # Fallback to individual environment variables
+        redis_host = os.getenv("REDIS_HOST", "redis")
+        redis_port = int(os.getenv("REDIS_PORT", 6379))
+        redis_password = os.getenv("REDIS_PASSWORD", "")
+        # Convert string 'True'/'False' to boolean
+        redis_ssl_str = os.getenv("REDIS_SSL", "False")
+        redis_ssl = redis_ssl_str.lower() == "true"
+        redis_db = 0
+        
+        logger.info(f"Using individual Redis env vars for connection to {redis_host}:{redis_port}")
     
     # Connection pool configuration
     max_connections = int(os.getenv("REDIS_MAX_CONNECTIONS", 1024))
@@ -39,6 +60,8 @@ def initialize():
         host=redis_host,
         port=redis_port,
         password=redis_password,
+        ssl=redis_ssl,
+        db=redis_db,
         decode_responses=True,
         socket_timeout=5.0,
         socket_connect_timeout=5.0,
