@@ -30,20 +30,20 @@ class Colors:
 
 # --- UI Helpers ---
 def print_banner():
-    """Prints the Suna setup banner."""
+    """Print Quriosity (Q) setup banner"""
     print(
-        f"""
-{Colors.BLUE}{Colors.BOLD}
-   ███████╗██╗   ██╗███╗   ██╗ █████╗ 
-   ██╔════╝██║   ██║████╗  ██║██╔══██╗
-   ███████╗██║   ██║██╔██╗ ██║███████║
-   ╚════██║██║   ██║██║╚██╗██║██╔══██║
-   ███████║╚██████╔╝██║ ╚████║██║  ██║
-   ╚══════╝ ╚═════╝ ╚═╝  ╚═══╝╚═╝  ╚═╝
-                                      
-   Installation Wizard
-{Colors.ENDC}
-"""
+        f"""{Colors.BLUE}{Colors.BOLD}
+     ██████╗  
+    ██╔═══██╗ 
+    ██║   ██║ 
+    ██║   ██║ 
+    ██║   ██║ 
+    ╚██████╔╝ 
+     ╚═══██╔╝ 
+
+
+    Quriosity (Q) Setup Wizard
+{Colors.ENDC}"""
     )
 
 
