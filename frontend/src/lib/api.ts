@@ -610,14 +610,7 @@ export const getMessages = async (threadId: string): Promise<Message[]> => {
   while (hasMore) {
     const { data, error } = await supabase
       .from('messages')
-      .select(`
-        *,
-        agents:agent_id (
-          name,
-          avatar,
-          avatar_color
-        )
-      `)
+      .select('*')
       .eq('thread_id', threadId)
       .neq('type', 'cost')
       .neq('type', 'summary')

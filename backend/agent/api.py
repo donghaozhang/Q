@@ -518,15 +518,20 @@ async def get_thread_agent(thread_id: str, user_id: str = Depends(get_current_us
         agent_source = "none"
         
         # First, try to get the most recently used agent from agent_runs
-        recent_agent_result = await client.table('agent_runs').select('agent_id', 'agent_version_id').eq('thread_id', thread_id).not_.is_('agent_id', 'null').order('created_at', desc=True).limit(1).execute()
-        if recent_agent_result.data:
-            effective_agent_id = recent_agent_result.data[0]['agent_id']
-            recent_version_id = recent_agent_result.data[0].get('agent_version_id')
-            agent_source = "recent"
-            logger.info(f"Found most recently used agent: {effective_agent_id} (version: {recent_version_id})")
+        # Note: agent_id column may not exist in agent_runs table, handling gracefully
+        try:
+            recent_agent_result = await client.table('agent_runs').select('*').eq('thread_id', thread_id).order('created_at', desc=True).limit(1).execute()
+            if recent_agent_result.data and recent_agent_result.data[0].get('agent_id'):
+                effective_agent_id = recent_agent_result.data[0]['agent_id']
+                recent_version_id = recent_agent_result.data[0].get('agent_version_id')
+                agent_source = "recent"
+                logger.info(f"Found most recently used agent: {effective_agent_id} (version: {recent_version_id})")
+        except Exception as e:
+            logger.warning(f"Could not fetch recent agent from agent_runs: {str(e)}")
+            # Continue without recent agent data
         
         # If no recent agent, fall back to thread default agent
-        elif thread_agent_id:
+        if not effective_agent_id and thread_agent_id:
             effective_agent_id = thread_agent_id
             agent_source = "thread"
             logger.info(f"Using thread default agent: {effective_agent_id}")
@@ -547,8 +552,8 @@ async def get_thread_agent(thread_id: str, user_id: str = Depends(get_current_us
                 "message": "No agent configured for this thread. Threads are agent-agnostic - you can select any agent."
             }
         
-        # Fetch the agent details with version information
-        agent_result = await client.table('agents').select('*, agent_versions!current_version_id(*)').eq('agent_id', effective_agent_id).eq('account_id', account_id).execute()
+        # Fetch the agent details without version information for now
+        agent_result = await client.table('agents').select('*').eq('agent_id', effective_agent_id).eq('account_id', account_id).execute()
         
         if not agent_result.data:
             # Agent was deleted or doesn't exist
@@ -1160,8 +1165,9 @@ async def get_agents(
         # Calculate offset
         offset = (page - 1) * limit
         
-        # Start building the query - include version data
-        query = client.table('agents').select('*, agent_versions!current_version_id(*)', count='exact').eq("account_id", user_id)
+        # Start building the query - include version data only if available
+        # For now, just select agents without version join to avoid schema errors
+        query = client.table('agents').select('*', count='exact').eq("account_id", user_id)
         
         # Apply search filter
         if search:
