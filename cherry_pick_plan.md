@@ -28,16 +28,16 @@ git cherry-pick f88bafb  # Replace all user-facing 'Suna' references with 'Q' �
 
 ## BATCH 2 (Commits 11-20)
 ```bash
-git cherry-pick 5757aa4  # Update .cursor/rules with Q branding and correct Docker compose commands
-git cherry-pick d4923e9  # Update homepage content: Replace 'Kortix Suna' with 'Q'
-git cherry-pick 8c140fd  # Fix use cases section: Change 'See Suna in action' to 'See Q in action'
-git cherry-pick 1ac5807  # Replace static thumbnails with live Quriosity website screenshots
-git cherry-pick 64d0717  # Update legal contact email from legal@kortixai.com to info@quriosity.com.au
-git cherry-pick 0471b80  # Update footer GitHub icon to link to Quriosity website
-git cherry-pick b9c396b  # Update Join Our Team link to point to Quriosity website
-git cherry-pick a36a97d  # Update repository name from kortix-ai/suna to Quriosity/Q
-git cherry-pick 87af5a9  # Add Quriosity Showcase section with 6 agent cards
-git cherry-pick ff62200  # Update footer links to point to Quriosity website
+git cherry-pick 5757aa4  # Update .cursor/rules with Q branding and correct Docker compose commands ✓ COMPLETED
+git cherry-pick d4923e9  # Update homepage content: Replace 'Kortix Suna' with 'Q' ✓ COMPLETED
+git cherry-pick 8c140fd  # Fix use cases section: Change 'See Suna in action' to 'See Q in action' ✓ COMPLETED
+git cherry-pick 1ac5807  # Replace static thumbnails with live Quriosity website screenshots ✓ COMPLETED
+git cherry-pick 64d0717  # Update legal contact email from legal@kortixai.com to info@quriosity.com.au ✓ COMPLETED
+git cherry-pick 0471b80  # Update footer GitHub icon to link to Quriosity website ✓ COMPLETED
+git cherry-pick b9c396b  # Update Join Our Team link to point to Quriosity website ✓ COMPLETED
+git cherry-pick a36a97d  # Update repository name from kortix-ai/suna to Quriosity/Q ✓ COMPLETED
+git cherry-pick 87af5a9  # Add Quriosity Showcase section with 6 agent cards ✓ COMPLETED
+git cherry-pick ff62200  # Update footer links to point to Quriosity website ✓ COMPLETED
 ```
 
 ## BATCH 3 (Commits 21-30)
