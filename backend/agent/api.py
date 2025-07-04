@@ -916,8 +916,14 @@ async def initiate_agent_with_files(
         project_id = project.data[0]['project_id']
         logger.info(f"Created new project: {project_id}")
 
-        # 2. Create Sandbox
+        # 2. Create Sandbox (with fallback)
         sandbox_id = None
+        sandbox_pass = None
+        vnc_url = None
+        website_url = None
+        token = None
+        sandbox_enabled = True
+        
         try:
           sandbox_pass = str(uuid.uuid4())
           sandbox = await create_sandbox(sandbox_pass, project_id)
@@ -935,25 +941,35 @@ async def initiate_agent_with_files(
           elif "token='" in str(vnc_link):
               token = str(vnc_link).split("token='")[1].split("'")[0]
         except Exception as e:
-            logger.error(f"Error creating sandbox: {str(e)}")
-            await client.table('projects').delete().eq('project_id', project_id).execute()
-            if sandbox_id:
-              try: await delete_sandbox(sandbox_id)
-              except Exception as e: pass
-            raise Exception("Failed to create sandbox")
+            logger.warning(f"Sandbox creation failed: {str(e)}")
+            logger.info("Falling back to local agent execution without sandbox")
+            sandbox_enabled = False
+            # Set fallback values
+            sandbox_id = f"local-{project_id}"
+            sandbox_pass = "local-fallback"
+            vnc_url = None
+            website_url = None
+            token = None
 
 
-        # Update project with sandbox info
+        # Update project with sandbox info (or fallback info)
+        sandbox_data = {
+            'id': sandbox_id, 
+            'pass': sandbox_pass, 
+            'vnc_preview': vnc_url,
+            'sandbox_url': website_url, 
+            'token': token,
+            'enabled': sandbox_enabled,
+            'type': 'daytona' if sandbox_enabled else 'local-fallback'
+        }
+        
         update_result = await client.table('projects').update({
-            'sandbox': {
-                'id': sandbox_id, 'pass': sandbox_pass, 'vnc_preview': vnc_url,
-                'sandbox_url': website_url, 'token': token
-            }
+            'sandbox': sandbox_data
         }).eq('project_id', project_id).execute()
 
         if not update_result.data:
-            logger.error(f"Failed to update project {project_id} with new sandbox {sandbox_id}")
-            if sandbox_id:
+            logger.error(f"Failed to update project {project_id} with sandbox info")
+            if sandbox_enabled and sandbox_id:
               try: await delete_sandbox(sandbox_id)
               except Exception as e: logger.error(f"Error deleting sandbox: {str(e)}")
             raise Exception("Database update failed")
