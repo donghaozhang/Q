@@ -14,16 +14,16 @@
 
 ## BATCH 1 (Commits 1-10)
 ```bash
-git cherry-pick 214b678  # Recreate comprehensive Cursor Rules after reset
-git cherry-pick 44dee4e  # Add comprehensive Cursor Rules for Suna project
-git cherry-pick 68652bf  # feat: recreate comprehensive Cursor Rules for Suna AI agent platform
-git cherry-pick bd5bdde  # chore: update Docker configuration and add .dockerignore files
-git cherry-pick 4be515c  # refactor: move Cursor Rules to proper .cursor/rules directory
-git cherry-pick 1d5e215  # Update docker-compose.yaml configuration
-git cherry-pick 7e42571  # Fix VNC URL update issue in sandbox ensure-active endpoint
-git cherry-pick 970198f  # feat: Replace Kortix branding with Quriosity logo and update all references
-git cherry-pick a87ab39  # feat: Increase logo size from 24px to 32px for better visibility
-git cherry-pick f88bafb  # Replace all user-facing 'Suna' references with 'Q'
+git cherry-pick 214b678  # Recreate comprehensive Cursor Rules after reset ✓ COMPLETED
+git cherry-pick 44dee4e  # Add comprehensive Cursor Rules for Suna project ✓ COMPLETED
+git cherry-pick 68652bf  # feat: recreate comprehensive Cursor Rules for Suna AI agent platform ✓ SKIPPED (empty)
+git cherry-pick bd5bdde  # chore: update Docker configuration and add .dockerignore files ✓ COMPLETED
+git cherry-pick 4be515c  # refactor: move Cursor Rules to proper .cursor/rules directory ✓ COMPLETED
+git cherry-pick 1d5e215  # Update docker-compose.yaml configuration ✓ COMPLETED
+git cherry-pick 7e42571  # Fix VNC URL update issue in sandbox ensure-active endpoint ✓ COMPLETED
+git cherry-pick 970198f  # feat: Replace Kortix branding with Quriosity logo and update all references ✓ COMPLETED
+git cherry-pick a87ab39  # feat: Increase logo size from 24px to 32px for better visibility ✓ COMPLETED
+git cherry-pick f88bafb  # Replace all user-facing 'Suna' references with 'Q' ✓ COMPLETED
 ```
 
 ## BATCH 2 (Commits 11-20)
