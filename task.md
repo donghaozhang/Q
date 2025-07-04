@@ -33,16 +33,18 @@
 - ✅ Fixed worker command from `uv run` to `python -m dramatiq`
 - ✅ Added missing `structlog>=24.4.0` to requirements.txt
 - ✅ Fixed Docker container startup issues
+- ✅ Modified docker-compose.yaml to use local build instead of pre-built image
 
 ---
 
 ## Current Tasks 🔄
 
 ### 1. Backend Service Startup
-- **Status**: Building with tmux session for better monitoring
-- **Issue**: Dependency resolution taking long time
-- **Action**: Force rebuild with no-cache in tmux session `q-debug`
+- **Status**: Building locally with updated requirements (structlog included)
+- **Issue**: Dependency resolution taking time but progressing
+- **Action**: Local build in progress in tmux session `q-debug`
 - **Tmux Session**: `q-debug` (attach with `tmux attach -t q-debug`)
+- **Fix Applied**: Modified docker-compose to build locally instead of using pre-built image
 
 ### 2. Feature Flag Debug
 - **Status**: Pending backend startup
