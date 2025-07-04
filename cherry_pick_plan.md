@@ -84,16 +84,16 @@ git cherry-pick bfa3251  # Fix API routing issues - update Railway CLI commands 
 
 ## BATCH 6 (Commits 51-60)
 ```bash
-git cherry-pick 221176d  # Fix remaining API routing issues - replace all API_URL with getApiUrl() helper
-git cherry-pick af7202b  # Fix: Centralize getApiUrl function to resolve 404 API routing issues
-git cherry-pick 33afc92  # Temp: Disable billing API calls to prevent 404 errors
-git cherry-pick 19c1825  # fix: Replace all direct billing API calls with mocks to prevent 404 errors
-git cherry-pick dcdf6b1  # fix: Replace ALL billing API functions with mocks
-git cherry-pick d4380d4  # Fix WorkspaceFileView TypeScript build error
-git cherry-pick d5c3f7b  # feat: add production environment configuration for backend and frontend
-git cherry-pick 05c3f7b  # Fix RabbitMQ connection parameters
-git cherry-pick d907f36  # Fix RabbitMQ credentials - Use pika.PlainCredentials instead of dict
-git cherry-pick ecf6541  # Fix RabbitMQ credentials - Use pika.PlainCredentials instead of dict
+git cherry-pick 221176d  # Fix remaining API routing issues - replace all API_URL with getApiUrl() helper ✓ COMPLETED
+git cherry-pick af7202b  # Fix: Centralize getApiUrl function to resolve 404 API routing issues ✓ COMPLETED
+git cherry-pick 33afc92  # Temp: Disable billing API calls to prevent 404 errors ✓ COMPLETED
+git cherry-pick 19c1825  # fix: Replace all direct billing API calls with mocks to prevent 404 errors ✓ COMPLETED
+git cherry-pick dcdf6b1  # fix: Replace ALL billing API functions with mocks ✓ COMPLETED
+git cherry-pick d4380d4  # Fix WorkspaceFileView TypeScript build error ✓ COMPLETED
+git cherry-pick d5c3f7b  # feat: add production environment configuration for backend and frontend ✓ COMPLETED
+git cherry-pick 05c3f7b  # Fix RabbitMQ connection parameters ✓ COMPLETED
+git cherry-pick d907f36  # Fix RabbitMQ credentials - Use pika.PlainCredentials instead of dict ✓ COMPLETED
+git cherry-pick ecf6541  # Fix RabbitMQ credentials - Use pika.PlainCredentials instead of dict ✓ SKIPPED (duplicate)
 ```
 
 ## BATCH 7 (Commits 61-70)
