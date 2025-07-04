@@ -29,7 +29,11 @@
       "Bash(tmux new-session:*)",
       "Bash(tmux capture-pane:*)",
       "Bash(tmux kill-session:*)",
-      "Bash(tmux list-sessions:*)"
+      "Bash(tmux list-sessions:*)",
+      "Bash(ls:*)",
+      "Bash(supabase status:*)",
+      "mcp__supabase__execute_sql",
+      "mcp__supabase__apply_migration"
     ],
     "deny": []
   },
