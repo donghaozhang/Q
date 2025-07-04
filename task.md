@@ -31,7 +31,7 @@
 
 ### 4. Docker Configuration Fixes
 - ✅ Fixed worker command from `uv run` to `python -m dramatiq`
-- ✅ Added missing `structlog>=24.4.0` to requirements.txt
+- ✅ Added missing dependencies to requirements.txt: `structlog>=24.4.0`, `qstash>=2.0.0`, `cryptography>=42.0.0`
 - ✅ Fixed Docker container startup issues
 - ✅ Modified docker-compose.yaml to use local build instead of pre-built image
 
@@ -40,11 +40,11 @@
 ## Current Tasks 🔄
 
 ### 1. Backend Service Startup
-- **Status**: Rebuilding with qstash dependency
-- **Progress**: ✅ structlog issue fixed, now fixing qstash import error
+- **Status**: Rebuilding with cryptography dependency
+- **Progress**: ✅ structlog fixed ✅ qstash fixed, now fixing cryptography import error
 - **Action**: Local build in progress in tmux session `q-debug`
 - **Tmux Session**: `q-debug` (attach with `tmux attach -t q-debug`)
-- **Fix Applied**: Modified docker-compose to build locally + added missing dependencies
+- **Fix Applied**: Modified docker-compose + added structlog, qstash, cryptography dependencies
 
 ### 2. Feature Flag Debug
 - **Status**: Pending backend startup
