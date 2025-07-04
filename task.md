@@ -39,9 +39,10 @@
 ## Current Tasks 🔄
 
 ### 1. Backend Service Startup
-- **Status**: Building with new requirements
+- **Status**: Building with tmux session for better monitoring
 - **Issue**: Dependency resolution taking long time
-- **Action**: Force rebuild with no-cache in progress
+- **Action**: Force rebuild with no-cache in tmux session `q-debug`
+- **Tmux Session**: `q-debug` (attach with `tmux attach -t q-debug`)
 
 ### 2. Feature Flag Debug
 - **Status**: Pending backend startup
@@ -72,4 +73,11 @@
 
 ---
 
-*Last updated: 2025-07-04 14:30 UTC*
+*Last updated: 2025-07-04 17:05 UTC*
+
+## Session Management 🖥️
+
+- **Tmux Session**: `q-debug` 
+  - Left pane: Backend build and startup
+  - Right pane: Backend logs monitoring
+  - Attach: `tmux attach -t q-debug`
