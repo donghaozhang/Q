@@ -40,11 +40,11 @@
 ## Current Tasks 🔄
 
 ### 1. Backend Service Startup
-- **Status**: Building locally with updated requirements (structlog included)
-- **Issue**: Dependency resolution taking time but progressing
+- **Status**: Rebuilding with qstash dependency
+- **Progress**: ✅ structlog issue fixed, now fixing qstash import error
 - **Action**: Local build in progress in tmux session `q-debug`
 - **Tmux Session**: `q-debug` (attach with `tmux attach -t q-debug`)
-- **Fix Applied**: Modified docker-compose to build locally instead of using pre-built image
+- **Fix Applied**: Modified docker-compose to build locally + added missing dependencies
 
 ### 2. Feature Flag Debug
 - **Status**: Pending backend startup
@@ -71,7 +71,7 @@
 - **RabbitMQ**: Running and healthy ✅
 - **Backend**: Building (dependency issues) 🔄
 - **Worker**: Dependent on backend 🔄
-- **Frontend**: Not started yet ⏳
+- **Frontend**: Running on localhost:3000 ✅
 
 ---
 

@@ -52,8 +52,8 @@ services:
         condition: service_healthy
       rabbitmq:
         condition: service_healthy
-      worker:
-        condition: service_started
+      # worker:
+      #   condition: service_started
 
   worker:
     # image: ghcr.io/suna-ai/suna-backend:latest
