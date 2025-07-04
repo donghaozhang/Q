@@ -56,19 +56,24 @@ def initialize():
     logger.info(f"Initializing Redis connection pool to {redis_host}:{redis_port} with max {max_connections} connections")
 
     # Create connection pool
-    pool = redis.ConnectionPool(
-        host=redis_host,
-        port=redis_port,
-        password=redis_password,
-        ssl=redis_ssl,
-        db=redis_db,
-        decode_responses=True,
-        socket_timeout=5.0,
-        socket_connect_timeout=5.0,
-        retry_on_timeout=retry_on_timeout,
-        health_check_interval=30,
-        max_connections=max_connections,
-    )
+    pool_kwargs = {
+        "host": redis_host,
+        "port": redis_port,
+        "password": redis_password,
+        "db": redis_db,
+        "decode_responses": True,
+        "socket_timeout": 5.0,
+        "socket_connect_timeout": 5.0,
+        "retry_on_timeout": retry_on_timeout,
+        "health_check_interval": 30,
+        "max_connections": max_connections,
+    }
+    
+    # Only add SSL parameter if SSL is enabled
+    if redis_ssl:
+        pool_kwargs["ssl"] = True
+    
+    pool = redis.ConnectionPool(**pool_kwargs)
 
     # Create Redis client from connection pool
     client = redis.Redis(connection_pool=pool)

@@ -112,10 +112,16 @@
 ### 🔄 Current Tasks
 
 #### 1. **Test Full Backend API Endpoints**
-   - **Status**: READY TO START
+   - **Status**: IN PROGRESS - Debugging Redis Integration
+   - **Progress**: 
+     * ✅ Fixed Redis SSL connection issue in services/redis.py
+     * ✅ Updated .env to use localhost instead of redis container
+     * ✅ Backend successfully connects to Redis (no more SSL errors)
+     * 🔄 Feature flag still returns false - debugging Redis hash structure
+     * **Issue**: Backend expects Redis hash format but minimal backend used string format
+     * **Next**: Resolve Redis data format compatibility
    - **Goal**: Test agent creation through full backend API
    - **Verify**: Custom agents feature flag works with full backend
-   - **Test**: Agent initialization workflow end-to-end
 
 #### 2. **Verify End-to-End Agent Creation**
    - **Status**: PENDING
@@ -132,6 +138,9 @@
 - **Worker**: Background dramatiq workers configured ✅
 - **Frontend**: Running on localhost:3000 ✅
 - **MCP Servers**: Supabase and Playwright configured ✅
+- **Tmux Sessions**: 
+  * `backend-fixed`: Full backend with Redis fix
+  * `q-debug`: Original debugging session
 
 ### ⚠️ Known Minor Issues:
 - Redis SSL warnings (non-blocking)
