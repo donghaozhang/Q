@@ -70,16 +70,16 @@ git cherry-pick 8445316  # feat: Successfully deploy Suna backend to Railway wit
 
 ## BATCH 5 (Commits 41-50)
 ```bash
-git cherry-pick 47dc169  # chore: Update cursor rules to disable alwaysApply flag
-git cherry-pick 31ae5a7  # Fix: Add ESLint ignore config for Railway deployment
-git cherry-pick c0bb095  # Fix: Enable TypeScript build error ignoring and update deprecated config
-git cherry-pick af5d5e6  # Fix: Add root-level health and feature-flags endpoints for frontend compatibility
-git cherry-pick ca6738d  # Fix: Add Railway domains to CORS allowed origins
-git cherry-pick 5fbc293  # Fix billing and API endpoints - replace remaining API_URL with getApiUrl() helper
-git cherry-pick bf5e5d8  # Add Railway testing workflow and API testing script
-git cherry-pick 829176a  # Fix agent API endpoints - replace API_URL with getApiUrl helper in agents utils
-git cherry-pick b27a77d  # Add Railway deployment and testing rules
-git cherry-pick bfa3251  # Fix API routing issues - update Railway CLI commands to use npx
+git cherry-pick 47dc169  # chore: Update cursor rules to disable alwaysApply flag ✓ COMPLETED
+git cherry-pick 31ae5a7  # Fix: Add ESLint ignore config for Railway deployment ✓ COMPLETED
+git cherry-pick c0bb095  # Fix: Enable TypeScript build error ignoring and update deprecated config ✓ COMPLETED
+git cherry-pick af5d5e6  # Fix: Add root-level health and feature-flags endpoints for frontend compatibility ✓ COMPLETED
+git cherry-pick ca6738d  # Fix: Add Railway domains to CORS allowed origins ✓ COMPLETED
+git cherry-pick 5fbc293  # Fix billing and API endpoints - replace remaining API_URL with getApiUrl() helper ✓ COMPLETED
+git cherry-pick bf5e5d8  # Add Railway testing workflow and API testing script ✓ COMPLETED
+git cherry-pick 829176a  # Fix agent API endpoints - replace API_URL with getApiUrl helper in agents utils ✓ COMPLETED
+git cherry-pick b27a77d  # Add Railway deployment and testing rules ✓ COMPLETED
+git cherry-pick bfa3251  # Fix API routing issues - update Railway CLI commands to use npx ✓ COMPLETED
 ```
 
 ## BATCH 6 (Commits 51-60)
