@@ -1,8 +1,18 @@
-import structlog, logging, os
+import logging, os
+try:
+    import structlog
+    STRUCTLOG_AVAILABLE = True
+except ImportError:
+    STRUCTLOG_AVAILABLE = False
+    # Fallback to regular logging if structlog not available
+    class MockStructlog:
+        processors = type('processors', (), {'JSONRenderer': lambda: lambda x: x})()
+        def get_logger(self): return logging.getLogger(__name__)
+    structlog = MockStructlog()
 
 ENV_MODE = os.getenv("ENV_MODE", "LOCAL")
 
-renderer = [structlog.processors.JSONRenderer()]
+renderer = [structlog.processors.JSONRenderer()] if STRUCTLOG_AVAILABLE else []
 if ENV_MODE.lower() == "local".lower():
     renderer = [structlog.dev.ConsoleRenderer()]
 

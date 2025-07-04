@@ -40,17 +40,17 @@
 ## Current Tasks 🔄
 
 ### 1. Backend Service Startup
-- **Status**: Rebuilding with cryptography dependency
-- **Progress**: ✅ structlog fixed ✅ qstash fixed, now fixing cryptography import error
-- **Action**: Local build in progress in tmux session `q-debug`
+- **Status**: Multiple missing dependencies blocking startup
+- **Issue**: Pre-built image missing: structlog, qstash, cryptography, croniter, apscheduler
+- **Temporary Solution**: Created fallback logging, testing core functionality with available services
 - **Tmux Session**: `q-debug` (attach with `tmux attach -t q-debug`)
-- **Fix Applied**: Modified docker-compose + added structlog, qstash, cryptography dependencies
+- **Next**: Test frontend functionality with Redis/RabbitMQ working
 
 ### 2. Feature Flag Debug
-- **Status**: Pending backend startup
-- **Issue**: Redis connection not working for feature flags
+- **Status**: Ready to test with frontend
+- **Issue**: Backend dependency issues blocking full API testing
 - **Redis Value**: `custom_agents = true` (confirmed in Redis)
-- **Backend Reading**: `false` (connection issue)
+- **Action**: Test frontend behavior without backend API
 
 ---
 
