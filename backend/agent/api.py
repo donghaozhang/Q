@@ -1061,12 +1061,25 @@ async def initiate_agent_with_files(
         }).execute()
 
         # 6. Start Agent Run
-        agent_run = await client.table('agent_runs').insert({
-            "thread_id": thread_id, "status": "running",
-            "started_at": datetime.now(timezone.utc).isoformat(),
-            "agent_id": agent_config.get('agent_id') if agent_config else None,
-            "agent_version_id": agent_config.get('current_version_id') if agent_config else None
-        }).execute()
+        agent_run_data = {
+            "thread_id": thread_id, 
+            "status": "running",
+            "started_at": datetime.now(timezone.utc).isoformat()
+        }
+        
+        # Only include agent_id and agent_version_id if the database schema supports them
+        try:
+            # Check if agent_id column exists by attempting to query with it
+            test_query = await client.table('agent_runs').select('agent_id').limit(1).execute()
+            # If we get here, the column exists, so include agent fields
+            if agent_config:
+                agent_run_data["agent_id"] = agent_config.get('agent_id')
+                agent_run_data["agent_version_id"] = agent_config.get('current_version_id')
+        except Exception as e:
+            # Column doesn't exist yet, skip agent_id fields for now
+            logger.warning(f"agent_id column not found in agent_runs table, skipping: {str(e)}")
+            
+        agent_run = await client.table('agent_runs').insert(agent_run_data).execute()
         agent_run_id = agent_run.data[0]['id']
         logger.info(f"Created new agent run: {agent_run_id}")
         structlog.contextvars.bind_contextvars(
