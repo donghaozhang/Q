@@ -23,6 +23,7 @@ from agentpress.response_processor import (
 from services.supabase import DBConnection
 from utils.logger import logger
 from langfuse import Langfuse
+from langfuse.client import StatefulClient
 from services.langfuse import langfuse
 import datetime
 from litellm.utils import token_counter
@@ -38,7 +39,7 @@ class ThreadManager:
     XML-based tool execution patterns.
     """
 
-    def __init__(self, trace: Optional[StatefulTraceClient] = None, is_agent_builder: bool = False, target_agent_id: Optional[str] = None, agent_config: Optional[dict] = None):
+    def __init__(self, trace: Optional[StatefulClient] = None, is_agent_builder: bool = False, target_agent_id: Optional[str] = None, agent_config: Optional[dict] = None):
         """Initialize ThreadManager.
 
         Args:

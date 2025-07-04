@@ -1,0 +1,51 @@
+# Optimized Dockerfile for faster builds
+FROM python:3.11-slim as builder
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    gcc \
+    g++ \
+    && rm -rf /var/lib/apt/lists/*
+
+WORKDIR /app
+
+# Copy only requirements first for better caching
+COPY requirements.txt .
+
+# Install Python dependencies as user to avoid permission issues
+RUN pip install --user --no-cache-dir -r requirements.txt gunicorn
+
+# Final stage
+FROM python:3.11-slim
+
+# Set environment variables
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PATH=/home/appuser/.local/bin:$PATH \
+    ENV_MODE="production"
+
+WORKDIR /app
+
+# Create non-root user
+RUN useradd -m -u 1000 appuser && \
+    mkdir -p /app/logs && \
+    chown -R appuser:appuser /app
+
+# Copy Python packages from builder
+COPY --from=builder --chown=appuser:appuser /root/.local /home/appuser/.local
+
+# Switch to non-root user
+USER appuser
+
+# Copy application code
+COPY --chown=appuser:appuser . .
+
+EXPOSE 8000
+
+# Optimized for development with fewer workers
+CMD ["gunicorn", "api:app", \
+     "--workers", "2", \
+     "--worker-class", "uvicorn.workers.UvicornWorker", \
+     "--bind", "0.0.0.0:8000", \
+     "--timeout", "300", \
+     "--reload"]

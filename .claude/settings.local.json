@@ -10,8 +10,31 @@
       "Bash(rm:*)",
       "Bash(git rm:*)",
       "Bash(git push:*)",
-      "Bash(rg:*)"
+      "Bash(rg:*)",
+      "Bash(npm install:*)",
+      "Bash(docker:*)",
+      "Bash(chmod:*)",
+      "Bash(./quick-start-wsl.sh:*)",
+      "Bash(./dev-start.sh:*)",
+      "Bash(uv pip:*)",
+      "Bash(uv sync:*)",
+      "Bash(source:*)",
+      "Bash(~/.local/bin/uv:*)",
+      "Bash(curl:*)",
+      "Bash(grep:*)",
+      "Bash(pkill:*)",
+      "Bash(true)",
+      "Bash(python:*)",
+      "Bash(uv run:*)",
+      "Bash(tmux new-session:*)",
+      "Bash(tmux capture-pane:*)",
+      "Bash(tmux kill-session:*)",
+      "Bash(tmux list-sessions:*)"
     ],
     "deny": []
-  }
+  },
+  "enabledMcpjsonServers": [
+    "supabase",
+    "playwright"
+  ]
 }

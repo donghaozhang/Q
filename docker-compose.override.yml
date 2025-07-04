@@ -1,0 +1,55 @@
+# Docker Compose override for faster development in WSL
+# This file is automatically used by docker-compose alongside docker-compose.yaml
+
+services:
+  # Build locally since pre-built image is not accessible
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    # WSL-specific volume optimizations
+    volumes:
+      - ./backend/.env:/app/.env:ro,cached
+    # Reduce startup time
+    environment:
+      - WORKERS=4  # Reduce from 33 for development
+      - THREADS=2
+      - PYTHONUNBUFFERED=1
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/.env:/app/.env:ro,cached
+    # Use fewer processes for development
+    command: uv run dramatiq --skip-logging --processes 2 --threads 2 run_agent_background
+
+  frontend:
+    # Cache npm modules for faster builds
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        - BUILDKIT_INLINE_CACHE=1
+    volumes:
+      - ./frontend/.env.local:/app/.env.local:ro,cached
+    # Development optimizations
+    environment:
+      - NODE_ENV=development
+      - WATCHPACK_POLLING=true  # Better file watching in WSL
+
+  # Redis and RabbitMQ remain unchanged but with health check optimizations
+  redis:
+    # Faster health checks for development
+    healthcheck:
+      interval: 5s
+      timeout: 3s
+      retries: 3
+
+  rabbitmq:
+    healthcheck:
+      interval: 5s
+      timeout: 3s
+      retries: 3
+      start_period: 5s

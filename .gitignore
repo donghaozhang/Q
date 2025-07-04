@@ -212,3 +212,6 @@ fal_generated_*.*
 backend/.test_token_compression.py
 backend/test_token_compression_data.py
 docker-compose.exe
+
+# MCP configuration with sensitive tokens
+.mcp.json
