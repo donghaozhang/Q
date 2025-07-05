@@ -102,12 +102,15 @@ This is a critical issue that prevents the agents feature from working entirely.
 ## Status: ✅ COMPLETED - ALL ISSUES RESOLVED
 
 ### Resolution Summary
-Both the original 500 error and subsequent database function errors have been successfully fixed!
+All database and authentication issues have been successfully fixed!
 
 **Issues Resolved**:
 1. ✅ **500 Error on /api/agents** - Missing `agents` table created
 2. ✅ **404 Error on get_accounts** - Basejump migrations applied
 3. ✅ **initiateAgent Server Error** - Database schema dependencies resolved
+4. ✅ **JWT Authentication Errors** - Test user created in auth.users
+5. ✅ **Persistent 403 Forbidden** - Browser storage clearing solution provided
+6. ✅ **Missing Threads Table** - Agentpress schema migration applied
 
 **Database Schema Applied**:
 - ✅ `basejump` schema and core functions
@@ -257,10 +260,31 @@ API Error: {code: '42P01', details: null, hint: null, message: 'relation "public
 ### Root Cause
 The `threads` table is missing from the database. This table is needed for the sidebar navigation and thread management functionality.
 
-### Solution Required
-Need to apply additional migrations that create the `threads` table and related schema.
+### Solution Applied
+Applied the agentpress schema migration that creates the threads table and related schema:
 
-**Status**: 🔧 IN PROGRESS - Fixing missing threads table
+```bash
+# Applied agentpress schema migration
+Get-Content "backend/supabase/migrations/20250416133920_agentpress_schema.sql" | docker exec -i supabase_db_suna psql -U postgres -d postgres
+```
+
+**Tables Created**:
+- ✅ `threads` - Main thread storage
+- ✅ `messages` - Thread messages
+- ✅ `agent_runs` - Agent execution tracking
+- ✅ `projects` - Project management
+
+**Verification**:
+```bash
+# Confirmed threads table exists with proper structure
+docker exec -i supabase_db_suna psql -U postgres -d postgres -c "\d threads"
+
+# Tested threads endpoint - now returns empty array (expected)
+curl -X GET "http://127.0.0.1:54321/rest/v1/threads?select=*&account_id=eq.b995d4c1-18b5-44aa-bc8d-fa43b389ee0c"
+# Response: []
+```
+
+**Status**: ✅ RESOLVED - Threads table created and endpoint working
 
 **For Future Development**: 
 1. Clear browser storage when encountering auth issues
