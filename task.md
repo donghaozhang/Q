@@ -111,6 +111,7 @@ All database and authentication issues have been successfully fixed!
 4. ✅ **JWT Authentication Errors** - Test user created in auth.users
 5. ✅ **Persistent 403 Forbidden** - Browser storage clearing solution provided
 6. ✅ **Missing Threads Table** - Agentpress schema migration applied
+7. ✅ **Project ID Mismatch** - Fixed frontend cache race condition
 
 **Database Schema Applied**:
 - ✅ `basejump` schema and core functions
@@ -305,12 +306,34 @@ Agent initiated: {thread_id: '227d383a-6f60-469f-9b7b-910c5d385309', agent_run_i
   2. Project ID generation/assignment is inconsistent
   3. Project-thread relationship is not properly established
 
-### Investigation Required
-1. Check what projects exist in the database
-2. Verify project creation during agent initiation process
-3. Ensure project-thread relationship is properly established
+### Investigation Results
+1. ✅ **Project exists in database**: Project `5a6503b3-a7a3-4c5c-9ef3-3dce33243f1a` exists with name "build auto snake game html"
+2. ✅ **Thread-project relationship correct**: Thread `227d383a-6f60-469f-9b7b-910c5d385309` properly references the project
+3. ❌ **Frontend cache timing issue**: Projects are cached for 5 minutes, but thread processing happens immediately
 
-**Status**: 🔧 IN PROGRESS - Investigating project ID mismatch
+### Root Cause Analysis
+The issue is a **race condition** between:
+- Agent initiation creates new project and thread
+- Frontend cache invalidation happens asynchronously
+- Thread processing tries to find project before cache is refreshed
+- `processThreadsWithProjects` function can't find the project in stale cache
+
+### Solution Applied
+Modified `useInitiateAgentWithInvalidation` to use `refetchQueries` instead of `invalidateQueries`:
+
+```typescript
+// OLD: Async invalidation (race condition)
+queryClient.invalidateQueries({ queryKey: projectKeys.all });
+
+// NEW: Force immediate refetch (waits for fresh data)
+await Promise.all([
+  queryClient.refetchQueries({ queryKey: projectKeys.all }),
+  queryClient.refetchQueries({ queryKey: threadKeys.all }),
+  queryClient.refetchQueries({ queryKey: dashboardKeys.agents })
+]);
+```
+
+**Status**: ✅ RESOLVED - Fixed cache race condition with immediate refetch
 
 **For Future Development**: 
 1. Clear browser storage when encountering auth issues

@@ -31,10 +31,13 @@ export const useInitiateAgentWithInvalidation = () => {
   const queryClient = useQueryClient();
   const { onOpen } = useModal();
   return useInitiateAgentMutation({
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({ queryKey: projectKeys.all });
-      queryClient.invalidateQueries({ queryKey: threadKeys.all });
-      queryClient.invalidateQueries({ queryKey: dashboardKeys.agents });
+    onSuccess: async (data) => {
+      // Force immediate refetch instead of just invalidating to avoid race conditions
+      await Promise.all([
+        queryClient.refetchQueries({ queryKey: projectKeys.all }),
+        queryClient.refetchQueries({ queryKey: threadKeys.all }),
+        queryClient.refetchQueries({ queryKey: dashboardKeys.agents })
+      ]);
     },
     onError: (error) => {
       console.log('Mutation error:', error);
