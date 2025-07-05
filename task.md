@@ -245,7 +245,25 @@ After clearing storage:
 - **Test User**: User `b995d4c1-18b5-44aa-bc8d-fa43b389ee0c` exists and is functional
 - **Auth Endpoint**: `GET /auth/v1/user` returns user data when properly authenticated
 
+## Issue 6: Missing Threads Table (404 Not Found)
+
+### Problem
+After clearing browser storage and authenticating, new error appears:
+```
+GET http://127.0.0.1:54321/rest/v1/threads?select=*&account_id=eq.b995d4c1-18b5-44aa-bc8d-fa43b389ee0c 404 (Not Found)
+API Error: {code: '42P01', details: null, hint: null, message: 'relation "public.threads" does not exist'}
+```
+
+### Root Cause
+The `threads` table is missing from the database. This table is needed for the sidebar navigation and thread management functionality.
+
+### Solution Required
+Need to apply additional migrations that create the `threads` table and related schema.
+
+**Status**: 🔧 IN PROGRESS - Fixing missing threads table
+
 **For Future Development**: 
 1. Clear browser storage when encountering auth issues
 2. Use the test credentials (test@example.com / password123) to log into the application
 3. All functionality should work properly after fresh authentication
+4. Apply ALL database migrations to ensure complete schema
