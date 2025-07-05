@@ -335,9 +335,34 @@ await Promise.all([
 
 **Status**: ✅ RESOLVED - Fixed cache race condition with immediate refetch
 
+## Issue 8: Sandbox Ensure-Active CORS and 500 Error
+
+### Problem
+After resolving the project ID mismatch, a new issue appears with sandbox activation:
+
+```
+Access to fetch at 'http://localhost:8000/api/project/f84651e3-8110-4d20-b99c-1829f655ccf5/sandbox/ensure-active' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
+
+POST http://localhost:8000/api/project/f84651e3-8110-4d20-b99c-1829f655ccf5/sandbox/ensure-active net::ERR_FAILED 500 (Internal Server Error)
+```
+
+### Root Cause Analysis
+1. **CORS Issue**: Backend not allowing localhost:3000 origin for sandbox endpoints
+2. **500 Error**: Backend sandbox ensure-active endpoint returning internal server error
+3. **Endpoint Missing**: The `/api/project/{project_id}/sandbox/ensure-active` endpoint may not exist or be properly configured
+
+### Investigation Required
+1. Check if the sandbox ensure-active endpoint exists in backend
+2. Verify CORS configuration for sandbox endpoints
+3. Check if sandbox service is running and accessible
+4. Verify project sandbox configuration in database
+
+**Status**: 🔧 IN PROGRESS - Investigating sandbox CORS and 500 error
+
 **For Future Development**: 
 1. Clear browser storage when encountering auth issues
 2. Use the test credentials (test@example.com / password123) to log into the application
 3. All functionality should work properly after fresh authentication
 4. Apply ALL database migrations to ensure complete schema
 5. Verify project creation and thread-project relationships work correctly
+6. Fix sandbox ensure-active endpoint CORS and 500 error issues
