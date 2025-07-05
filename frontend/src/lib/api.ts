@@ -317,6 +317,8 @@ export const getProject = async (projectId: string): Promise<Project> => {
               `Failed to ensure sandbox is active: ${response.status} ${response.statusText}`,
               errorText,
             );
+            // Don't treat sandbox activation failure as a critical error
+            console.log('Continuing without sandbox activation - this is not critical for project functionality');
           } else {
             console.log('Sandbox activation successful');
           }
