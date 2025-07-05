@@ -151,7 +151,7 @@ allow_origin_regex = r"https://.*\.up\.railway\.app"
 
 # Add staging regex pattern for Vercel deploys if in staging mode
 if config.ENV_MODE == EnvMode.STAGING:
-    allow_origin_regex = f"{allow_origin_regex}|https://suna-.*-prjcts\.vercel\.app"
+    allow_origin_regex = f"{allow_origin_regex}|https://suna-.*-prjcts\\.vercel\\.app"
 
 app.add_middleware(
     CORSMiddleware,
