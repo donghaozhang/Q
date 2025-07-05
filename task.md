@@ -286,8 +286,35 @@ curl -X GET "http://127.0.0.1:54321/rest/v1/threads?select=*&account_id=eq.b995d
 
 **Status**: ✅ RESOLVED - Threads table created and endpoint working
 
+## Issue 7: Project ID Mismatch After Agent Initiation
+
+### Problem
+Agent initiation is successful, but there's a project ID mismatch causing thread display issues:
+
+```
+Agent initiated: {thread_id: '227d383a-6f60-469f-9b7b-910c5d385309', agent_run_id: 'b11cd2cd-a98c-48d1-b136-0764db3e64db'}
+❌ Thread 227d383a-6f60-469f-9b7b-910c5d385309 has project_id=5a6503b3-a7a3-4c5c-9ef3-3dce33243f1a but no matching project found
+[API] Raw projects from DB: 2 (2) [{…}, {…}]
+```
+
+### Root Cause
+- Thread is created with `project_id=5a6503b3-a7a3-4c5c-9ef3-3dce33243f1a`
+- Frontend has 2 projects in database but none match this project_id
+- This suggests either:
+  1. Project creation is failing during agent initiation
+  2. Project ID generation/assignment is inconsistent
+  3. Project-thread relationship is not properly established
+
+### Investigation Required
+1. Check what projects exist in the database
+2. Verify project creation during agent initiation process
+3. Ensure project-thread relationship is properly established
+
+**Status**: 🔧 IN PROGRESS - Investigating project ID mismatch
+
 **For Future Development**: 
 1. Clear browser storage when encountering auth issues
 2. Use the test credentials (test@example.com / password123) to log into the application
 3. All functionality should work properly after fresh authentication
 4. Apply ALL database migrations to ensure complete schema
+5. Verify project creation and thread-project relationships work correctly
