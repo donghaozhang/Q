@@ -275,3 +275,65 @@ export function Component({ className, children }: ComponentProps) {
 - **Slow builds**: Use pre-built images with `docker-compose.override.yml`
 - **File watching**: Set `WATCHPACK_POLLING=true` for Next.js in WSL
 - **Performance**: Store code in WSL filesystem, not Windows mount (`/mnt/c/`)
+
+## Recent Fixes & Solutions
+
+### CORS and Connectivity Issues (Fixed 2025-07-04)
+**Problem**: Frontend getting "Failed to fetch" and CORS errors when connecting to backend
+**Root Causes**:
+1. Multiple backend processes running simultaneously causing port conflicts
+2. Missing Python dependencies (sentry-sdk, openai, litellm, etc.)
+3. Service startup timing issues
+
+**Solution**:
+```bash
+# 1. Clean install all dependencies
+cd /home/zdhpe/suna/Q/backend
+source venv/bin/activate
+pip install -r requirements.txt
+
+# 2. Kill any conflicting processes
+pkill -f "python api.py"
+
+# 3. Start services cleanly using tmux
+tmux new-session -d -s backend-final -c /home/zdhpe/suna/Q/backend 'source venv/bin/activate && python api.py'
+tmux new-session -d -s workers-final -c /home/zdhpe/suna/Q/backend 'source venv/bin/activate && python -m dramatiq run_agent_background.worker'
+tmux new-session -d -s frontend-complete -c /home/zdhpe/suna/Q/frontend 'npm run dev'
+
+# 4. Verify services
+curl http://localhost:8000/api/health  # Should return {"status":"ok"}
+curl http://localhost:3000             # Should return HTML page
+```
+
+**Key Learnings**:
+- Always activate Python virtual environment before starting backend
+- Check for port conflicts using `ss -tlnp | grep 8000`
+- Use tmux for better service management in development
+- Install all requirements.txt dependencies to avoid missing module errors
+
+### Authentication Requirements
+**Current Status**: Platform requires user authentication to access agent functionality
+- **Agents endpoint**: Returns 401 without valid JWT token
+- **Agent execution**: Requires authenticated user for agent creation and runs
+- **Frontend access**: Works without auth but agent features need login
+
+**To Use Platform**:
+1. Navigate to http://localhost:3000
+2. Click "Get started" button
+3. Sign up/login with Supabase authentication
+4. Access full agent functionality once authenticated
+
+### Service Architecture
+**Confirmed Working Setup**:
+- **Backend**: FastAPI on port 8000 with Python venv activation
+- **Frontend**: Next.js on port 3000 with npm
+- **Workers**: Dramatiq background workers for agent execution
+- **Database**: Supabase with proper CORS configuration
+- **Authentication**: Supabase Auth with JWT tokens
+
+### Development Workflow
+1. **Environment Setup**: Use Python venv for backend, npm for frontend
+2. **Service Management**: Use tmux sessions for better process control
+3. **Dependency Management**: Install all requirements.txt packages before starting
+4. **Testing**: Verify health endpoints before proceeding with development
+5. **Authentication**: Sign up in browser to access full platform features

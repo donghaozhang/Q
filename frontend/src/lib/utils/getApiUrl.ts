@@ -11,6 +11,9 @@ const API_URL = process.env.NEXT_PUBLIC_BACKEND_URL || '';
  * @returns The complete API URL with /api prefix
  */
 export function getApiUrl(endpoint: string): string {
+  console.log('getApiUrl called with endpoint:', endpoint);
+  console.log('API_URL from env:', API_URL);
+  
   if (!API_URL) {
     console.warn('NEXT_PUBLIC_BACKEND_URL is not set');
     return `/api${endpoint}`;
@@ -18,6 +21,8 @@ export function getApiUrl(endpoint: string): string {
   
   // Ensure endpoint starts with /
   const normalizedEndpoint = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+  const finalUrl = `${API_URL}/api${normalizedEndpoint}`;
   
-  return `${API_URL}/api${normalizedEndpoint}`;
+  console.log('Final API URL:', finalUrl);
+  return finalUrl;
 } 

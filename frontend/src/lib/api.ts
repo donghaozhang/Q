@@ -1590,7 +1590,10 @@ export const initiateAgent = async (
 
 export const checkApiHealth = async (): Promise<HealthCheckResponse> => {
   try {
-    const response = await fetch(getApiUrl('/health'), {
+    const url = getApiUrl('/health');
+    console.log('API Health Check URL:', url);
+    
+    const response = await fetch(url, {
       cache: 'no-store',
     });
 
@@ -1600,6 +1603,7 @@ export const checkApiHealth = async (): Promise<HealthCheckResponse> => {
 
     return response.json();
   } catch (error) {
+    console.error('API Health Check Error:', error);
     throw error;
   }
 };
