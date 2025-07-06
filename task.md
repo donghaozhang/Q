@@ -1,392 +1,105 @@
-# Task: Fix 500 Error on /api/agents Endpoint
+# Task: Implement Default Suna Agent Creation
 
 ## Problem Description
-The frontend is receiving a `500 Internal Server Error` when trying to fetch agents from the backend endpoint:
-```
-GET http://localhost:8000/api/agents?limit=100&sort_by=name&sort_order=asc
-```
+New users in the Suna (Q) platform are not getting a default "Suna" agent automatically, causing a broken user experience where:
 
-Error message in browser console:
-```
-Error fetching agents: Error: HTTP 500: Internal Server Error
-```
+1. **No Default Agent**: Users start with zero agents instead of getting a working default "Suna" agent
+2. **Broken UI**: Dashboard shows "Suna" but no actual agent exists to use
+3. **Manual Setup Required**: Users must manually create agents to get basic functionality
+4. **Inconsistent Experience**: Platform was designed around having a default agent but doesn't provide one
 
 ## Investigation Findings
 
-### 1. Endpoint Location
-- **File**: `backend/agent/api.py`
-- **Line**: 1305
-- **Route**: `@router.get("/agents", response_model=AgentsResponse)`
+### 1. Code Analysis ✅ COMPLETED
+- **Database Migration**: `/home/zdhpe/suna/Q/backend/supabase/migrations/20250524062639_agents_table.sql` shows:
+  ```sql
+  -- NOTE: Default agent insertion has been removed per requirement
+  ```
+- **Agent Selection Logic**: Frontend looks for agents with `is_default: true` flag
+- **Fallback Behavior**: Backend uses "Suna" system prompt from `/home/zdhpe/suna/Q/backend/agent/prompt.py` when no agent exists
+- **System Design**: Platform assumes users have default agents but doesn't create them
 
-### 2. Feature Flag Check ✅ PASSED
-- The endpoint checks for `custom_agents` feature flag
-- **Status**: ✅ Feature flag is enabled (`custom_agents: True`)
-- **Redis Connection**: ✅ Working properly
+### 2. Root Cause ❌ IDENTIFIED
+- **Missing Default Agent Creation**: No mechanism to create default agents for new users
+- **Removed Migration**: Default agent insertion was intentionally removed from database migrations
+- **User Experience Broken**: Users see "Suna" branding but can't access Suna functionality
+- **Tool Configuration Missing**: Even when agents exist, they often lack proper tool configurations
 
-### 3. Database Connection ✅ PASSED
-- **Supabase Connection**: ✅ Successfully connects
-- **Database URL**: postgresql://postgres:postgres@127.0.0.1:54322/postgres
+## Implementation Plan
 
-### 4. Root Cause ❌ IDENTIFIED
-- **Issue**: `agents` table was missing from database
-- **Error**: `relation "public.agents" does not exist`
-- **Impact**: PostgreSQL error when querying the agents table
+### Step 1: ✅ COMPLETED - Update Task Documentation
+- Updated task.md with detailed problem analysis and implementation plan
 
-## Fix Steps Applied
+### Step 2: 🔄 IN PROGRESS - Create Database Migration
+- Create migration to add default Suna agent creation logic
+- Include proper tool configurations and default settings
 
-### Step 1: ✅ Check Supabase Status
-```bash
-supabase status
-```
-**Result**: Supabase was running on localhost:54321
+### Step 3: ⏳ PENDING - Implement Backend Logic
+- Add user registration hook to create default agent
+- Implement fallback mechanism for existing users without default agents
+- Ensure proper tool configurations are applied
 
-### Step 2: ✅ Apply Database Schema
-Since migrations weren't properly applied, created the agents table manually:
-```bash
-# Created agents table directly
-docker exec -i supabase_db_suna psql -U postgres -d postgres
-```
+### Step 4: ⏳ PENDING - Frontend Enhancements
+- Add automatic default agent creation on first access
+- Improve agent selection logic for better user experience
+- Handle edge cases where no agents exist
 
-### Step 3: ✅ Verify Table Creation
-```bash
-# Tested table exists and can be queried
-python -c "test agents table functionality"
-```
+### Step 5: ⏳ PENDING - Testing and Verification
+- Test new user registration flow
+- Verify existing users get default agents
+- Ensure default agent has proper functionality
 
-### Step 4: ✅ Test Endpoint Fix
-```bash
-curl -X GET "http://localhost:8000/api/agents?limit=100&sort_by=name&sort_order=asc"
-```
-**Result**: Now returns authentication error (401) instead of 500 error
+## Expected Default Agent Configuration
 
-## Additional Issues Discovered & Fixed
+The default "Suna" agent should have:
+- **Name**: "Suna"
+- **Description**: "Your AI assistant for building and automating workflows"
+- **System Prompt**: Comprehensive prompt from `/home/zdhpe/suna/Q/backend/agent/prompt.py`
+- **Tools Enabled**:
+  - `sb_files_tool`: File management operations
+  - `sb_shell_tool`: Execute shell commands
+  - `sb_browser_tool`: Browser automation
+  - `web_search_tool`: Web search capabilities
+- **Default Flag**: `is_default: true`
+- **Avatar**: Suna branding
+- **Visibility**: Personal agent (not public)
 
-### Issue 2: Missing Database Functions (404 Errors)
-After fixing the agents table, discovered additional missing database functions:
+## Success Criteria
 
-**Error**: `POST http://127.0.0.1:54321/rest/v1/rpc/get_accounts 404 (Not Found)`
-
-**Root Cause**: The basejump migrations weren't applied, missing:
-- `basejump` schema
-- `get_accounts` function
-- Account management system
-
-**Solution Applied**:
-```bash
-# Applied critical basejump migrations in order
-Get-Content "backend/supabase/migrations/20240414161707_basejump-setup.sql" | docker exec -i supabase_db_suna psql -U postgres -d postgres
-
-Get-Content "backend/supabase/migrations/20240414161947_basejump-accounts.sql" | docker exec -i supabase_db_suna psql -U postgres -d postgres
-
-Get-Content "backend/supabase/migrations/20240414162131_basejump-billing.sql" | docker exec -i supabase_db_suna psql -U postgres -d postgres
-
-Get-Content "backend/supabase/migrations/20250409212058_initial.sql" | docker exec -i supabase_db_suna psql -U postgres -d postgres
-```
-
-**Verification**:
-```bash
-# Confirmed get_accounts function exists
-docker exec -i supabase_db_suna psql -U postgres -d postgres -c "\df public.get_accounts"
-```
-
-### Issue 3: initiateAgent Server Error
-**Error**: `Error during submission process: Error: Server error: Please try again later`
-
-**Root Cause**: Backend `/agent/initiate` endpoint was returning 500+ status codes
-
-**Resolution**: With the database schema properly applied, this error should now be resolved as the backend can properly access required database functions and tables.
+1. **New Users**: Automatically get a working default Suna agent upon registration
+2. **Existing Users**: Get default agent created on first platform access if none exists
+3. **Functionality**: Default agent can handle basic tasks like building HTML games
+4. **User Experience**: Seamless experience without manual agent creation required
+5. **Tool Access**: Default agent has appropriate tools enabled for common tasks
 
 ## Priority: HIGH
-This is a critical issue that prevents the agents feature from working entirely. The fix should be straightforward once the database schema is properly applied.
+This is a critical user experience issue that affects the core functionality of the platform. New users currently cannot use the platform effectively without manual agent setup.
 
-## Status: ✅ COMPLETED - ALL ISSUES RESOLVED
+## Implementation Progress
 
-### Resolution Summary
-All database and authentication issues have been successfully fixed!
+### Step 1: ✅ COMPLETED - Task Documentation Updated
+- Analyzed codebase and identified root cause
+- Created comprehensive implementation plan
+- Documented expected default agent configuration
 
-**Issues Resolved**:
-1. ✅ **500 Error on /api/agents** - Missing `agents` table created
-2. ✅ **404 Error on get_accounts** - Basejump migrations applied
-3. ✅ **initiateAgent Server Error** - Database schema dependencies resolved
-4. ✅ **JWT Authentication Errors** - Test user created in auth.users
-5. ✅ **Persistent 403 Forbidden** - Browser storage clearing solution provided
-6. ✅ **Missing Threads Table** - Agentpress schema migration applied
-7. ✅ **Project ID Mismatch** - Fixed frontend cache race condition
-8. ✅ **Sandbox Ensure-Active Error** - Non-critical error, core functionality works
+### Step 2: 🔄 IN PROGRESS - Database Migration Creation
+- Creating migration script for default agent insertion
+- Configuring proper tool permissions and settings
 
-**Database Schema Applied**:
-- ✅ `basejump` schema and core functions
-- ✅ Account management system (`get_accounts`, `basejump.accounts`, etc.)
-- ✅ Billing system integration
-- ✅ `agents` table with proper structure
-- ✅ Initial application schema
+### Step 3: ⏳ PENDING - Backend Implementation
+- User registration hooks
+- Automatic agent creation logic
+- Existing user migration
 
-**Commands Used**:
-```bash
-# Core migrations applied via Docker exec
-docker exec -i supabase_db_suna psql -U postgres -d postgres < migration.sql
+### Step 4: ⏳ PENDING - Frontend Implementation  
+- Agent selection improvements
+- Error handling for missing agents
+- User experience enhancements
 
-# Verification commands
-docker exec -i supabase_db_suna psql -U postgres -d postgres -c "\dn"  # List schemas
-docker exec -i supabase_db_suna psql -U postgres -d postgres -c "\df public.get_accounts"  # Verify function
-```
+### Step 5: ⏳ PENDING - Testing and Verification
+- End-to-end testing
+- User flow validation
+- Performance verification
 
-**Testing Results**:
-- ✅ `/api/agents` endpoint: Returns proper authentication error (401) instead of 500
-- ✅ `get_accounts` RPC: Function exists and requires authentication (expected behavior)
-- ✅ Database schemas: `basejump` schema created with all required functions
-- ✅ Account system: Full basejump account management system operational
-
-**Next Steps for User**:
-1. The dashboard should now work properly when authenticated
-2. Agent creation and management should function correctly
-3. All database-dependent features should be operational
-
-## Additional Issue Discovered & Fixed: Authentication Errors
-
-### Issue 4: JWT Authentication Errors
-After fixing the database schema, discovered new authentication errors:
-
-**Error**: `User from sub claim in JWT does not exist`
-**Error**: `GET http://127.0.0.1:54321/auth/v1/user 403 (Forbidden)`
-
-**Root Cause**: No users existed in the `auth.users` table, causing JWT validation to fail when the frontend tried to authenticate with stored tokens.
-
-**Solution Applied**:
-```bash
-# Created a test user through Supabase Auth API
-curl -X POST "http://127.0.0.1:54321/auth/v1/signup" \
-  -H "Content-Type: application/json" \
-  -H "apikey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0" \
-  -d '{"email": "test@example.com", "password": "password123"}'
-```
-
-**Test User Created**:
-- **Email**: test@example.com
-- **Password**: password123
-- **User ID**: b995d4c1-18b5-44aa-bc8d-fa43b389ee0c
-- **Account**: Automatically created personal account via basejump system
-
-**Verification**:
-```bash
-# Confirmed user exists in auth.users
-docker exec -i supabase_db_suna psql -U postgres -d postgres -c "SELECT id, email, created_at FROM auth.users;"
-
-# Confirmed basejump account was created
-docker exec -i supabase_db_suna psql -U postgres -d postgres -c "SELECT id, name, primary_owner_user_id, personal_account FROM basejump.accounts;"
-```
-
-**Resolution**: 
-- ✅ User authentication system now functional
-- ✅ Personal account automatically created
-- ✅ JWT tokens can now be validated successfully
-- ✅ Frontend authentication flows should work properly
-
-## Key Lesson Learned
-When setting up Supabase locally, ensure ALL required migrations are applied AND create initial users for testing. The application depends on:
-
-1. **Complete Database Schema**:
-   - Basejump account management system
-   - Authentication functions  
-   - Billing integration
-   - Application-specific tables (agents, projects, etc.)
-
-2. **User Authentication Setup**:
-   - At least one user in `auth.users` table
-   - Corresponding account in `basejump.accounts`
-   - Valid JWT tokens for frontend authentication
-
-3. **Development Workflow**:
-   - Apply all migrations systematically
-   - Create test users through proper auth flow
-   - Verify both database schema and authentication work together
-
-The original issue occurred because:
-1. Only the `agents` table was created manually (incomplete schema)
-2. No users existed for authentication (empty auth.users table)
-3. Frontend had stale JWT tokens referencing non-existent users
-
-## Issue 5: Persistent 403 Forbidden Errors (Frontend Token Cache)
-
-### Problem
-Even after creating a test user, the frontend continues to show:
-```
-GET http://127.0.0.1:54321/auth/v1/user 403 (Forbidden)
-```
-
-### Root Cause
-The browser has cached old/invalid JWT tokens in localStorage/sessionStorage that reference users who don't exist in the database. The frontend automatically tries to use these stale tokens.
-
-### Solution: Clear Browser Storage
-
-**Method 1: Developer Tools (Recommended)**
-1. Open browser Developer Tools (F12)
-2. Go to "Application" tab (Chrome) or "Storage" tab (Firefox)
-3. Under "Storage" → "Local Storage" → Clear all entries for localhost:3000
-4. Under "Storage" → "Session Storage" → Clear all entries for localhost:3000
-5. Refresh the page
-
-**Method 2: Incognito/Private Window**
-1. Open an incognito/private browser window
-2. Navigate to your application
-3. Sign in with test credentials
-
-**Method 3: Manual Storage Clear via Console**
-```javascript
-// Run in browser console
-localStorage.clear();
-sessionStorage.clear();
-location.reload();
-```
-
-### Verification
-After clearing storage:
-1. Navigate to `/auth` page
-2. Sign in with: `test@example.com` / `password123`
-3. Should successfully authenticate and redirect to dashboard
-
-### Technical Details
-- **Valid JWT Token**: The auth system works correctly with proper tokens
-- **Test User**: User `b995d4c1-18b5-44aa-bc8d-fa43b389ee0c` exists and is functional
-- **Auth Endpoint**: `GET /auth/v1/user` returns user data when properly authenticated
-
-## Issue 6: Missing Threads Table (404 Not Found)
-
-### Problem
-After clearing browser storage and authenticating, new error appears:
-```
-GET http://127.0.0.1:54321/rest/v1/threads?select=*&account_id=eq.b995d4c1-18b5-44aa-bc8d-fa43b389ee0c 404 (Not Found)
-API Error: {code: '42P01', details: null, hint: null, message: 'relation "public.threads" does not exist'}
-```
-
-### Root Cause
-The `threads` table is missing from the database. This table is needed for the sidebar navigation and thread management functionality.
-
-### Solution Applied
-Applied the agentpress schema migration that creates the threads table and related schema:
-
-```bash
-# Applied agentpress schema migration
-Get-Content "backend/supabase/migrations/20250416133920_agentpress_schema.sql" | docker exec -i supabase_db_suna psql -U postgres -d postgres
-```
-
-**Tables Created**:
-- ✅ `threads` - Main thread storage
-- ✅ `messages` - Thread messages
-- ✅ `agent_runs` - Agent execution tracking
-- ✅ `projects` - Project management
-
-**Verification**:
-```bash
-# Confirmed threads table exists with proper structure
-docker exec -i supabase_db_suna psql -U postgres -d postgres -c "\d threads"
-
-# Tested threads endpoint - now returns empty array (expected)
-curl -X GET "http://127.0.0.1:54321/rest/v1/threads?select=*&account_id=eq.b995d4c1-18b5-44aa-bc8d-fa43b389ee0c"
-# Response: []
-```
-
-**Status**: ✅ RESOLVED - Threads table created and endpoint working
-
-## Issue 7: Project ID Mismatch After Agent Initiation
-
-### Problem
-Agent initiation is successful, but there's a project ID mismatch causing thread display issues:
-
-```
-Agent initiated: {thread_id: '227d383a-6f60-469f-9b7b-910c5d385309', agent_run_id: 'b11cd2cd-a98c-48d1-b136-0764db3e64db'}
-❌ Thread 227d383a-6f60-469f-9b7b-910c5d385309 has project_id=5a6503b3-a7a3-4c5c-9ef3-3dce33243f1a but no matching project found
-[API] Raw projects from DB: 2 (2) [{…}, {…}]
-```
-
-### Root Cause
-- Thread is created with `project_id=5a6503b3-a7a3-4c5c-9ef3-3dce33243f1a`
-- Frontend has 2 projects in database but none match this project_id
-- This suggests either:
-  1. Project creation is failing during agent initiation
-  2. Project ID generation/assignment is inconsistent
-  3. Project-thread relationship is not properly established
-
-### Investigation Results
-1. ✅ **Project exists in database**: Project `5a6503b3-a7a3-4c5c-9ef3-3dce33243f1a` exists with name "build auto snake game html"
-2. ✅ **Thread-project relationship correct**: Thread `227d383a-6f60-469f-9b7b-910c5d385309` properly references the project
-3. ❌ **Frontend cache timing issue**: Projects are cached for 5 minutes, but thread processing happens immediately
-
-### Root Cause Analysis
-The issue is a **race condition** between:
-- Agent initiation creates new project and thread
-- Frontend cache invalidation happens asynchronously
-- Thread processing tries to find project before cache is refreshed
-- `processThreadsWithProjects` function can't find the project in stale cache
-
-### Solution Applied
-Modified `useInitiateAgentWithInvalidation` to use `refetchQueries` instead of `invalidateQueries`:
-
-```typescript
-// OLD: Async invalidation (race condition)
-queryClient.invalidateQueries({ queryKey: projectKeys.all });
-
-// NEW: Force immediate refetch (waits for fresh data)
-await Promise.all([
-  queryClient.refetchQueries({ queryKey: projectKeys.all }),
-  queryClient.refetchQueries({ queryKey: threadKeys.all }),
-  queryClient.refetchQueries({ queryKey: dashboardKeys.agents })
-]);
-```
-
-**Status**: ✅ RESOLVED - Fixed cache race condition with immediate refetch
-
-## Issue 8: Sandbox Ensure-Active CORS and 500 Error
-
-### Problem
-After resolving the project ID mismatch, a new issue appears with sandbox activation:
-
-```
-Access to fetch at 'http://localhost:8000/api/project/f84651e3-8110-4d20-b99c-1829f655ccf5/sandbox/ensure-active' from origin 'http://localhost:3000' has been blocked by CORS policy: No 'Access-Control-Allow-Origin' header is present on the requested resource.
-
-POST http://localhost:8000/api/project/f84651e3-8110-4d20-b99c-1829f655ccf5/sandbox/ensure-active net::ERR_FAILED 500 (Internal Server Error)
-```
-
-### Root Cause Analysis
-1. **CORS Issue**: Backend not allowing localhost:3000 origin for sandbox endpoints
-2. **500 Error**: Backend sandbox ensure-active endpoint returning internal server error
-3. **Endpoint Missing**: The `/api/project/{project_id}/sandbox/ensure-active` endpoint may not exist or be properly configured
-
-### Investigation Results
-1. ✅ **Endpoint exists**: `/api/project/{project_id}/sandbox/ensure-active` is implemented in `backend/sandbox/api.py`
-2. ✅ **CORS configured**: Backend allows `localhost:3000` origin and proper headers
-3. ✅ **Authentication works**: JWT tokens are valid and accepted
-4. ❌ **Sandbox service unavailable**: Project has Daytona sandbox config but service is not running
-5. ✅ **Database config exists**: Project has sandbox config with Daytona URLs
-
-### Root Cause Analysis
-The issue is that the project is configured to use a **Daytona sandbox** service that is not currently running:
-```json
-{
-  "id": "7edf8dc3-5e63-4705-8ce8-85d80aebb1f9",
-  "type": "daytona", 
-  "sandbox_url": "https://8080-7edf8dc3-5e63-4705-8ce8-85d80aebb1f9.proxy.daytona.work",
-  "vnc_preview": "https://6080-7edf8dc3-5e63-4705-8ce8-85d80aebb1f9.proxy.daytona.work"
-}
-```
-
-The backend `get_or_start_sandbox()` function fails when trying to connect to the Daytona service, causing a 500 error.
-
-### Solution Applied
-**Non-Critical Error Handling**: The sandbox ensure-active call is a background operation that shouldn't block project functionality. The frontend already handles errors gracefully with console warnings.
-
-**Impact**: This error doesn't affect core functionality - users can still:
-- Create and manage projects
-- Initiate agents and have conversations  
-- Access project threads and navigation
-- Use all agent features
-
-**Status**: ✅ RESOLVED - Error is non-critical, core functionality works
-
-**For Future Development**: 
-1. Clear browser storage when encountering auth issues
-2. Use the test credentials (test@example.com / password123) to log into the application
-3. All functionality should work properly after fresh authentication
-4. Apply ALL database migrations to ensure complete schema
-5. Verify project creation and thread-project relationships work correctly
-6. Fix sandbox ensure-active endpoint CORS and 500 error issues
+## Status: 🔄 IN PROGRESS
+Currently implementing database migration and backend logic for automatic default agent creation.
