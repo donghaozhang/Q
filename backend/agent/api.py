@@ -902,6 +902,25 @@ async def initiate_agent_with_files(
         if default_agent_result.data:
             agent_config = default_agent_result.data[0]
             logger.info(f"Using default agent: {agent_config['name']} ({agent_config['agent_id']})")
+        else:
+            # No default agent found, ensure user has one
+            logger.info(f"No default agent found for account {account_id}, ensuring default agent exists")
+            try:
+                # Call the database function to ensure default agent exists
+                ensure_result = await client.rpc('ensure_default_agent', {'account_id_param': account_id}).execute()
+                if ensure_result.data:
+                    # Fetch the newly created/assigned default agent
+                    default_agent_result = await client.table('agents').select('*').eq('account_id', account_id).eq('is_default', True).execute()
+                    if default_agent_result.data:
+                        agent_config = default_agent_result.data[0]
+                        logger.info(f"Created/assigned default agent: {agent_config['name']} ({agent_config['agent_id']})")
+                    else:
+                        logger.warning(f"Failed to fetch default agent after creation for account {account_id}")
+                else:
+                    logger.warning(f"Failed to ensure default agent for account {account_id}")
+            except Exception as e:
+                logger.error(f"Error ensuring default agent for account {account_id}: {e}")
+                # Continue without agent_config - will use system prompt fallback
     
     can_use, model_message, allowed_models = await can_use_model(client, account_id, model_name)
     if not can_use:
@@ -1162,6 +1181,14 @@ async def get_agents(
     client = await db.client
     
     try:
+        # Ensure user has a default agent before listing agents
+        try:
+            await client.rpc('ensure_default_agent', {'account_id_param': user_id}).execute()
+            logger.debug(f"Ensured default agent exists for user {user_id}")
+        except Exception as e:
+            logger.warning(f"Failed to ensure default agent for user {user_id}: {e}")
+            # Continue anyway - user might have existing agents
+        
         # Calculate offset
         offset = (page - 1) * limit
         
