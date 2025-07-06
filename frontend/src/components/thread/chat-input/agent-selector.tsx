@@ -75,7 +75,7 @@ export function AgentSelector({
         >
           <span className="flex items-center gap-2 truncate">
             <Bot className="h-3 w-3" />
-            {selectedAgent?.name || 'Select an agent...'}
+            {selectedAgent?.name || (agents?.length === 0 ? 'Suna (Loading...)' : 'Select an agent...')}
           </span>
           <ChevronsUpDown className="ml-2 h-3 w-3 shrink-0 opacity-50" />
         </Button>
@@ -84,7 +84,11 @@ export function AgentSelector({
         <Command>
           <CommandInput placeholder="Search agents..." className="h-9" />
           <CommandList>
-            <CommandEmpty>No agents found.</CommandEmpty>
+            <CommandEmpty>
+              {agents?.length === 0 && !isLoading 
+                ? 'Your default Suna agent is being created...' 
+                : 'No agents found.'}
+            </CommandEmpty>
             <CommandGroup>
               {agents?.map((agent) => (
                 <CommandItem
