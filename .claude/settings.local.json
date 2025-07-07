@@ -52,7 +52,10 @@
       "Bash(sudo apt:*)",
       "Bash(sudo apt install:*)",
       "Bash(redis-cli:*)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "mcp__supabase__list_tables",
+      "Bash(mkdir:*)",
+      "Bash(mv:*)"
     ],
     "deny": []
   },
