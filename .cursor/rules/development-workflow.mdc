@@ -1,0 +1,390 @@
+---
+description: 
+globs: 
+alwaysApply: true
+---
+# Development Workflow & Setup
+
+## Development File Structure
+```
+suna/
+├── setup.py                   # Automated project setup script
+├── start.py                   # Development environment starter
+├── mise.toml                  # Development environment config
+├── docker-compose.yaml        # → docker/docker-compose.yaml (symlink)
+├── docker/                    # Production Docker configurations
+│   ├── Dockerfile.backend     # Production backend build
+│   ├── Dockerfile.frontend    # Production frontend build
+│   ├── Dockerfile.worker      # Worker service build
+│   └── docker-compose.yaml    # Service orchestration
+├── scripts/                   # Utility scripts
+│   ├── run-all.sh            # WSL startup with Windows Terminal
+│   ├── build-fast.sh         # Optimized Docker builds
+│   └── debug/                # Testing and debugging utilities
+├── debug-tools/               # Debugging utilities
+│   ├── auth-test.html        # Standalone auth test page
+│   ├── minimal_backend.py    # Minimal API testing server
+│   └── debug_feature_flags.py # Feature flag debugging
+├── docs/                      # Documentation
+│   ├── tasks/                # Completed task documentation
+│   └── ...                   # Other guides
+├── backend/
+│   ├── .env.example           # Backend environment template
+│   ├── requirements.txt       # Python dependencies
+│   ├── pyproject.toml         # Poetry configuration
+│   ├── poetry.lock            # Locked dependencies
+│   ├── Dockerfile             # Backend container config
+│   ├── run_agent_background.py # Background agent runner
+│   ├── utils/
+│   │   ├── retry.py           # Redis retry utilities
+│   │   └── scripts/           # Maintenance scripts
+│   └── tests/                 # Organized test directory
+│       ├── README.md          # Test documentation
+│       ├── check_projects.py  # Project validation tests
+│       ├── test_fal_tool.py   # FAL media tool tests
+│       ├── test_image_generation.py # Image generation tests
+│       ├── test_validate_base64_image.py # Base64 image validation tests
+│       ├── test_token_compression.py # Token compression tests
+│       ├── test_custom_mcp.py # Custom MCP server tests
+│       └── test_mcp_use.py    # MCP usage tests
+├── frontend/
+│   ├── .env.example           # Frontend environment template
+│   ├── package.json           # Node.js dependencies
+│   ├── package-lock.json      # Locked dependencies
+│   ├── next.config.ts         # Next.js configuration
+│   ├── tailwind.config.ts     # Tailwind CSS config
+│   ├── tsconfig.json          # TypeScript configuration
+│   ├── Dockerfile             # Frontend container config
+│   ├── .prettierrc            # Code formatting config
+│   ├── .prettierignore        # Prettier ignore patterns
+│   └── src/lib/utils/
+│       └── unicode.ts         # Unicode filename normalization
+└── supabase/
+    ├── config.toml            # Supabase project config
+    └── migrations/            # Database schema changes
+```
+
+## Quick Start Development
+
+### Automated Setup (Recommended)
+```bash
+# Clone repository
+git clone https://github.com/donghaozhang/suna.git
+cd suna
+
+# Run automated setup (handles all environment setup)
+python setup.py
+
+# Start development environment (starts all services)
+python start.py
+```
+
+### Fast Development Workflow
+For faster frontend development (avoid Docker rebuilds):
+
+```bash
+# Keep backend in Docker (use space, not hyphen)
+docker compose up backend redis rabbitmq worker
+
+# Run frontend locally for instant hot reload
+cd frontend
+npm install
+npm run dev  # Starts on localhost:3000
+```
+
+Benefits:
+- ⚡ **Instant hot reload** - changes appear immediately
+- 🔧 **No rebuilds** needed  
+- 🐛 **Better debugging** with browser dev tools
+
+### Docker Commands (Modern Syntax)
+```bash
+# Use "docker compose" (space) not "docker-compose" (hyphen)
+docker compose up
+docker compose ps
+docker compose restart frontend
+docker compose down
+docker compose build --no-cache frontend
+
+# Clear cache when needed
+docker system prune -a -f
+
+# Windows-specific: Kill stuck Node processes
+taskkill /F /IM node.exe
+
+# Clear Next.js build cache
+Remove-Item -Recurse -Force .next
+```
+
+## Environment Configuration
+
+### Backend Environment (backend/.env)
+```env
+# Database
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# LLM Providers
+ANTHROPIC_API_KEY=your_anthropic_key
+OPENAI_API_KEY=your_openai_key
+
+# Optional Services
+TAVILY_API_KEY=your_tavily_key
+FIRECRAWL_API_KEY=your_firecrawl_key
+FAL_KEY=your_fal_key
+```
+
+### Frontend Environment (frontend/.env.local)
+```env
+NEXT_PUBLIC_SUPABASE_URL=your_supabase_url
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+NEXT_PUBLIC_BACKEND_URL=http://localhost:8000/api
+NEXT_PUBLIC_URL=http://localhost:3000
+```
+
+### Cloud Deployment Environment
+
+#### Backend Production (.env.production)
+```env
+# Database
+SUPABASE_URL=https://your-project.supabase.co
+SUPABASE_ANON_KEY=your_anon_key
+SUPABASE_SERVICE_ROLE_KEY=your_service_role_key
+
+# LLM Providers
+ANTHROPIC_API_KEY=your_anthropic_key
+OPENAI_API_KEY=your_openai_key
+
+# Cloud Services (URL-based for Railway, etc.)
+REDIS_URL=redis://user:pass@host:port/db
+RABBITMQ_URL=amqp://user:pass@host:port/vhost
+
+# CORS Configuration
+FRONTEND_URL=https://your-frontend-domain.com
+
+# Optional Services
+TAVILY_API_KEY=your_tavily_key
+FIRECRAWL_API_KEY=your_firecrawl_key
+FAL_KEY=your_fal_key
+```
+
+#### Frontend Production (.env.production)
+```env
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
+NEXT_PUBLIC_BACKEND_URL=https://your-backend-domain.com/api
+NEXT_PUBLIC_URL=https://your-frontend-domain.com
+```
+
+## Quriosity Branding System
+
+### Updated Site Configuration
+- **Site Name**: "Quriosity" (not "Kortix Suna")
+- **Product Name**: "Q" (not "Suna") 
+- **Repository Display**: "Quriosity/Q"
+- **Footer Links**: Point to https://quriosity.com.au/
+
+### Logo Assets (Three-Logo System)
+- `kortix-symbol.svg` - Blue Quriosity "Q" symbol (32x32px default)
+- `kortix-logo.svg` - Horizontal logo for light mode  
+- `kortix-logo-white.svg` - Horizontal logo for dark mode
+
+### Logo Component Usage
+```typescript
+// Standard usage with proper alt text
+<KortixLogo size={32} />  // Default sidebar size
+<KortixLogo size={16} />  // Chat avatar
+<KortixLogo />            // Uses 32px default
+
+// All logos use alt="Quriosity" or alt="Quriosity Logo"
+```
+
+## Recent Infrastructure Improvements
+
+### Enhanced Testing Framework
+- **New Test Files**: Comprehensive test suite in `backend/tests/`
+  - `test_validate_base64_image.py` - Base64 image validation with edge case testing
+  - `test_token_compression.py` - Token compression functionality tests
+  - `test_custom_mcp.py` - Custom MCP server integration tests
+  - `test_mcp_use.py` - MCP usage and tool execution tests
+- **Test Organization**: All tests moved to organized `backend/tests/` directory
+- **Enhanced Coverage**: Better testing for browser tools, image handling, and MCP integration
+
+### Browser Tool Enhancements
+- **Improved Screenshot Handling**: Better validation and error handling for different model types
+- **Zero-Byte Prevention**: Comprehensive validation prevents 0-byte screenshot generation
+- **Model-Specific Logic**: Enhanced handling based on model capabilities (GPT-4o, Claude, etc.)
+- **Better Debugging**: Enhanced logging and tracing for screenshot operations
+
+### Tolt Referral Integration
+- **Referral Tracking**: Automatic referral tracking in billing checkout flows
+- **Frontend Integration**: Referral data passed from frontend to backend seamlessly
+- **Billing Enhancement**: Referral information included in checkout session creation
+
+### Unicode File Handling
+- **New Feature**: Automatic filename normalization for cross-platform compatibility
+- **Location**: `frontend/src/lib/utils/unicode.ts`
+- **Purpose**: Ensures consistent Unicode representation between macOS (NFD) and other systems (NFC)
+
+```typescript
+import { normalizeFilenameToNFC } from '@/lib/utils/unicode';
+
+// Normalize filename before processing
+const normalizedName = normalizeFilenameToNFC(file.name);
+```
+
+### Redis Reliability Improvements
+**Location**: `backend/utils/retry.py`
+
+**Features**:
+- Exponential backoff retry mechanism
+- Configurable retry attempts and delays
+- Type-safe async function wrapper
+
+**Usage**:
+```python
+from backend.utils.retry import retry
+
+async def redis_operation():
+    # Redis operation that might fail
+    return await redis.get("key")
+
+# Retry with custom parameters
+result = await retry(redis_operation, max_attempts=3, delay_seconds=2)
+```
+
+### MCP Server Improvements
+- Enhanced MCP server browsing and configuration
+- Improved agent MCP configuration interface
+- Removed deprecated MCP configuration components
+- Better error handling for MCP server connections
+
+### UI/UX Improvements
+- **Removed FlickeringGrid vertical lines** from home sections
+- **Removed horizontal borders** between sections for seamless flow
+- **Unified backgrounds** with full-width coverage instead of segmented grids
+- **Clean gradients** replace complex grid patterns
+
+## Development Commands
+
+### Backend
+```bash
+cd backend
+poetry install
+poetry run python api.py           # Main API
+poetry run python sandbox/api.py   # Sandbox
+poetry run python mcp_local/api.py # MCP server
+```
+
+### Frontend
+```bash
+cd frontend
+npm install
+npm run dev      # Development server
+npm run build    # Production build
+npm run format   # Code formatting
+```
+
+### Database
+```bash
+supabase db push    # Apply migrations
+supabase db reset   # Reset local database
+```
+
+### Testing
+```bash
+# Backend tests (organized in backend/tests/)
+cd backend
+poetry run pytest tests/           # Run all tests
+poetry run pytest tests/test_fal_tool.py  # FAL media tool tests
+poetry run pytest tests/test_validate_base64_image.py  # Image validation tests
+poetry run pytest tests/test_token_compression.py  # Token compression tests
+poetry run pytest tests/test_custom_mcp.py  # MCP tests
+
+# Frontend tests
+cd frontend
+npm run test                       # Unit tests
+npm run test:watch                 # Watch mode
+npm run test:e2e                   # End-to-end tests
+```
+
+## File Organization
+
+### Backend Structure
+- `backend/api.py` - Main FastAPI application
+- `backend/agent/` - Agent system and tools
+- `backend/services/` - Business logic services
+- `backend/sandbox/` - Execution environment
+- `backend/utils/` - Utility functions and scripts
+  - `retry.py` - Redis retry utilities with exponential backoff
+  - `scripts/` - Maintenance and utility scripts
+- `backend/tests/` - Organized test directory with documentation
+
+### Frontend Structure  
+- `frontend/src/app/` - Next.js App Router pages
+- `frontend/src/components/` - React components
+- `frontend/src/hooks/` - Custom React hooks
+- `frontend/src/lib/` - Utilities and configurations
+- `frontend/src/lib/utils/unicode.ts` - Unicode normalization utilities
+
+### Home Page Components
+- `components/home/sections/quriosity-showcase.tsx` - 6 agent demonstrations
+- `components/home/sections/hero-section.tsx` - Main hero section
+- `components/home/sections/footer-section.tsx` - Footer with Quriosity links
+
+## Agent Tool Configuration
+
+### Fal Media Tool (Image Generation)
+- **Enabled by Default**: The `FalMediaTool` for image and video generation is now enabled by default for all agents, including custom ones.
+- **File Location**: The logic for this is in `backend/agent/run.py`.
+- **Behavior**: Previously, this tool was only active for the default "Suna" agent. The code has been changed so that any agent created will have access to the `fal_media_generation` function, unless the tool is explicitly disabled in the agent's configuration.
+- **Requirement**: The `FAL_KEY` environment variable must be set in the `backend/.env` file for the tool to function.
+
+## Code Quality & Standards
+
+### Python (Backend)
+- **Formatting**: Black code formatter
+- **Type Checking**: mypy for static type analysis
+- **Linting**: flake8 for code quality
+- **Testing**: pytest for unit and integration tests
+- **Error Handling**: Robust retry mechanisms for external services
+
+### TypeScript (Frontend)
+- **Formatting**: Prettier for consistent code style
+- **Type Checking**: TypeScript strict mode
+- **Linting**: ESLint for code quality
+- **Testing**: Jest for unit tests
+- **Unicode Handling**: Proper filename normalization for cross-platform compatibility
+
+### Git Workflow
+- **Branch Naming**: `feature/description`, `fix/description`, `hotfix/description`
+- **Commit Messages**: Conventional commits format
+- **Pull Requests**: Required for main branch
+- **Code Review**: At least one approval required
+
+## Feature Flags & Troubleshooting
+
+For comprehensive information about feature flag management, troubleshooting common issues, debugging commands, and performance optimization, see:
+
+**📖 [Feature Flags & Troubleshooting Guide](mdc:.cursor/rules/feature-flags-troubleshooting.mdc)**
+
+### Quick Reference
+- **Feature Flags**: Redis-based system for enabling/disabling features
+- **Troubleshooting**: Common issues with detailed solutions including Unicode filename issues
+- **Debug Commands**: Service health checks and debugging utilities
+- **Performance**: Optimization tips for frontend and backend
+- **Redis Reliability**: Automatic retry mechanisms for connection failures
+
+## Monitoring & Debugging
+
+### Error Tracking
+- **Sentry Integration**: [backend/sentry.py](mdc:backend/sentry.py) and [frontend/src/sentry.config.ts](mdc:frontend/src/sentry.config.ts)
+- **LLM Observability**: Langfuse integration in [backend/services/langfuse.py](mdc:backend/services/langfuse.py)
+- **Retry Monitoring**: Built-in logging for retry operations
+
+### Performance Monitoring
+- **Backend**: FastAPI built-in metrics and logging
+- **Frontend**: Next.js built-in analytics and Core Web Vitals
+- **Database**: Supabase dashboard for query performance
+- **Redis**: Connection reliability with automatic retry mechanisms
