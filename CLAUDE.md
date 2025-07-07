@@ -53,11 +53,11 @@ docker compose up redis rabbitmq -d
 
 ### WSL-Specific Quick Start
 ```bash
-# Quick start with pre-built images (fastest)
-./quick-start-wsl.sh
+# WSL startup script with Windows Terminal integration
+./scripts/run-all.sh
 
-# Interactive WSL startup script
-./start-wsl.sh
+# Fast Docker build with optimizations
+./scripts/build-fast.sh --optimized
 
 # Manual start with pre-built images
 docker pull ghcr.io/suna-ai/suna-backend:latest
