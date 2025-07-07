@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suna Authentication Test</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 0 auto; padding: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ddd; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+        .token-display { font-family: monospace; font-size: 12px; word-break: break-all; }
+        #results { white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>🔐 Suna Authentication Test Page</h1>
+    
+    <div class="section info">
+        <h3>Instructions:</h3>
+        <ol>
+            <li>First, make sure you're logged in at <a href="http://localhost:3000/auth" target="_blank">http://localhost:3000/auth</a></li>
+            <li>Then come back and click "Test Authentication" below</li>
+            <li>Check the results to see where authentication is failing</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h3>Quick Login Test:</h3>
+        <input type="email" id="email" placeholder="Email" value="test@example.com">
+        <input type="password" id="password" placeholder="Password" value="password123">
+        <button onclick="quickLogin()">Quick Login</button>
+        <button onclick="quickSignUp()">Quick Sign Up</button>
+    </div>
+
+    <div class="section">
+        <h3>Authentication Tests:</h3>
+        <button onclick="testAuthentication()">🔍 Test Authentication</button>
+        <button onclick="testAgentCall()">🤖 Test Agent Initiate</button>
+        <button onclick="clearResults()">🧹 Clear Results</button>
+    </div>
+
+    <div class="section">
+        <h3>Results:</h3>
+        <div id="results"></div>
+    </div>
+
+    <script>
+        // Initialize Supabase client
+        const supabaseUrl = 'https://xvhreblsabiwgfkykvvn.supabase.co';
+        const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh2aHJlYmxzYWJpd2dma3lrdnZuIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDk1MjA1NTAsImV4cCI6MjA2NTA5NjU1MH0.HXMfRWdqczPmLjKarGCPs8wSoG3lqf-JfG5sAtlcEMw';
+        
+        const { createClient } = supabase;
+        const supabaseClient = createClient(supabaseUrl, supabaseKey);
+
+        function log(message, type = 'info') {
+            const results = document.getElementById('results');
+            const timestamp = new Date().toLocaleTimeString();
+            results.textContent += `[${timestamp}] ${message}\n`;
+            console.log(message);
+        }
+
+        function clearResults() {
+            document.getElementById('results').textContent = '';
+        }
+
+        async function quickSignUp() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            log('🔐 Attempting sign up...');
+            
+            try {
+                const { data, error } = await supabaseClient.auth.signUp({
+                    email: email,
+                    password: password,
+                });
+                
+                if (error) {
+                    log(`❌ Sign up error: ${error.message}`, 'error');
+                } else {
+                    log('✅ Sign up successful! Check your email for confirmation.', 'success');
+                    log(`User ID: ${data.user?.id}`);
+                }
+            } catch (err) {
+                log(`❌ Sign up exception: ${err.message}`, 'error');
+            }
+        }
+
+        async function quickLogin() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            
+            log('🔐 Attempting login...');
+            
+            try {
+                const { data, error } = await supabaseClient.auth.signInWithPassword({
+                    email: email,
+                    password: password,
+                });
+                
+                if (error) {
+                    log(`❌ Login error: ${error.message}`, 'error');
+                } else {
+                    log('✅ Login successful!', 'success');
+                    log(`User: ${data.user?.email}`);
+                    log(`Session expires: ${new Date(data.session?.expires_at * 1000)}`);
+                    
+                    // Auto-run authentication test after login
+                    setTimeout(testAuthentication, 1000);
+                }
+            } catch (err) {
+                log(`❌ Login exception: ${err.message}`, 'error');
+            }
+        }
+
+        async function testAuthentication() {
+            log('🔍 Testing authentication...');
+            
+            try {
+                // Get current session
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (error) {
+                    log(`❌ Session error: ${error.message}`, 'error');
+                    return;
+                }
+                
+                if (!session) {
+                    log('❌ No active session found', 'error');
+                    log('💡 Please log in first using the login form above');
+                    return;
+                }
+                
+                log('✅ Active session found', 'success');
+                log(`User: ${session.user?.email}`);
+                log(`User ID: ${session.user?.id}`);
+                log(`Token expires: ${new Date(session.expires_at * 1000)}`);
+                
+                // Check if token is expired
+                const now = Date.now() / 1000;
+                if (session.expires_at < now) {
+                    log('❌ Token is expired!', 'error');
+                    return;
+                }
+                
+                log('✅ Token is valid and not expired', 'success');
+                
+                // Test backend health
+                log('🏥 Testing backend health...');
+                const healthResponse = await fetch('http://localhost:8000/api/health');
+                const healthData = await healthResponse.json();
+                log(`✅ Backend health: ${healthData.status}`);
+                
+                // Test authenticated endpoint
+                log('🔐 Testing authenticated API call...');
+                const testResponse = await fetch('http://localhost:8000/api/user/profile', {
+                    headers: {
+                        'Authorization': `Bearer ${session.access_token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                
+                log(`📡 API Response Status: ${testResponse.status}`);
+                
+                if (testResponse.status === 401) {
+                    log('❌ 401 Unauthorized - Token is being rejected by backend', 'error');
+                    
+                    // Decode token to inspect
+                    try {
+                        const tokenParts = session.access_token.split('.');
+                        const payload = JSON.parse(atob(tokenParts[1]));
+                        log('🔍 Token payload inspection:');
+                        log(`  - Subject (user_id): ${payload.sub}`);
+                        log(`  - Issuer: ${payload.iss}`);
+                        log(`  - Audience: ${payload.aud}`);
+                        log(`  - Expires: ${new Date(payload.exp * 1000)}`);
+                        log(`  - Issued: ${new Date(payload.iat * 1000)}`);
+                    } catch (jwtErr) {
+                        log(`❌ Error decoding JWT: ${jwtErr.message}`, 'error');
+                    }
+                } else if (testResponse.ok) {
+                    log('✅ Authentication successful!', 'success');
+                } else {
+                    log(`❌ API call failed: ${testResponse.status} ${testResponse.statusText}`, 'error');
+                }
+                
+            } catch (err) {
+                log(`❌ Test exception: ${err.message}`, 'error');
+            }
+        }
+
+        async function testAgentCall() {
+            log('🤖 Testing agent initiate call...');
+            
+            try {
+                const { data: { session }, error } = await supabaseClient.auth.getSession();
+                
+                if (error || !session) {
+                    log('❌ No valid session for agent test', 'error');
+                    return;
+                }
+                
+                // Create FormData for agent initiate
+                const formData = new FormData();
+                formData.append('prompt', 'Hello, this is a test message from the auth test page');
+                
+                log('📤 Sending agent initiate request...');
+                const response = await fetch('http://localhost:8000/api/agent/initiate', {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${session.access_token}`
+                    },
+                    body: formData
+                });
+                
+                log(`🤖 Agent Response Status: ${response.status}`);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    log('✅ Agent initiate successful!', 'success');
+                    log(`Agent Run ID: ${data.agent_run_id}`);
+                    log(`Thread ID: ${data.thread_id}`);
+                } else {
+                    const errorText = await response.text();
+                    log(`❌ Agent initiate failed: ${response.status}`, 'error');
+                    log(`Error: ${errorText}`);
+                }
+                
+            } catch (err) {
+                log(`❌ Agent test exception: ${err.message}`, 'error');
+            }
+        }
+
+        // Auto-test on load if session exists
+        window.addEventListener('load', () => {
+            setTimeout(testAuthentication, 1000);
+        });
+    </script>
+</body>
+</html>
