@@ -46,7 +46,13 @@
       "Bash(ss:*)",
       "Bash(dmesg:*)",
       "Bash(tmux ls:*)",
-      "Bash(kill:*)"
+      "Bash(kill:*)",
+      "Bash(cp:*)",
+      "Bash(systemctl status:*)",
+      "Bash(sudo apt:*)",
+      "Bash(sudo apt install:*)",
+      "Bash(redis-cli:*)",
+      "Bash(timeout:*)"
     ],
     "deny": []
   },
