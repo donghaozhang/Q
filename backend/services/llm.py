@@ -130,7 +130,7 @@ def prepare_params(
             "anthropic-beta": "output-128k-2025-02-19"
         }
         params["fallbacks"] = [{
-            "model": "openrouter/anthropic/claude-sonnet-4",
+            "model": "openrouter/anthropic/claude-3-5-sonnet-20241022",
             "messages": messages,
         }]
         # params["mock_testing_fallback"] = True

@@ -33,7 +33,20 @@
       "Bash(ls:*)",
       "Bash(supabase status:*)",
       "mcp__supabase__execute_sql",
-      "mcp__supabase__apply_migration"
+      "mcp__supabase__apply_migration",
+      "Bash(git pull:*)",
+      "WebFetch(domain:docs.anthropic.com)",
+      "Bash(claude --version)",
+      "Bash(find:*)",
+      "Bash(echo:*)",
+      "Bash(npm run dev:*)",
+      "Bash(timeout 3 npm run dev)",
+      "Bash(tmux kill-server:*)",
+      "Bash(tmux send-keys:*)",
+      "Bash(ss:*)",
+      "Bash(dmesg:*)",
+      "Bash(tmux ls:*)",
+      "Bash(kill:*)"
     ],
     "deny": []
   },
