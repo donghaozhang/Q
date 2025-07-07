@@ -11,7 +11,23 @@ suna/
 ├── setup.py                   # Automated project setup script
 ├── start.py                   # Development environment starter
 ├── mise.toml                  # Development environment config
-├── docker-compose.yaml        # Container orchestration
+├── docker-compose.yaml        # → docker/docker-compose.yaml (symlink)
+├── docker/                    # Production Docker configurations
+│   ├── Dockerfile.backend     # Production backend build
+│   ├── Dockerfile.frontend    # Production frontend build
+│   ├── Dockerfile.worker      # Worker service build
+│   └── docker-compose.yaml    # Service orchestration
+├── scripts/                   # Utility scripts
+│   ├── run-all.sh            # WSL startup with Windows Terminal
+│   ├── build-fast.sh         # Optimized Docker builds
+│   └── debug/                # Testing and debugging utilities
+├── debug-tools/               # Debugging utilities
+│   ├── auth-test.html        # Standalone auth test page
+│   ├── minimal_backend.py    # Minimal API testing server
+│   └── debug_feature_flags.py # Feature flag debugging
+├── docs/                      # Documentation
+│   ├── tasks/                # Completed task documentation
+│   └── ...                   # Other guides
 ├── backend/
 │   ├── .env.example           # Backend environment template
 │   ├── requirements.txt       # Python dependencies

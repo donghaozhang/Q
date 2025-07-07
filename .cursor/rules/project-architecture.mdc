@@ -8,12 +8,41 @@ alwaysApply: true
 ## Complete File Structure
 ```
 suna/
+├── CLAUDE.md                   # Project documentation and development guide
+├── README.md                   # Main project documentation
+├── CONTRIBUTING.md             # Contribution guidelines
+├── LICENSE                     # License file
+├── setup.py                    # Interactive setup wizard
+├── start.py                    # Main startup script
+├── docker-compose.yaml         # → docker/docker-compose.yaml (symlink)
+├── docker/                     # Production Docker configurations
+│   ├── Dockerfile.backend      # Production backend build
+│   ├── Dockerfile.frontend     # Production frontend build
+│   ├── Dockerfile.worker       # Worker service build
+│   └── docker-compose.yaml     # Service orchestration
+├── scripts/                    # Utility scripts
+│   ├── run-all.sh             # WSL startup with Windows Terminal
+│   ├── build-fast.sh          # Optimized Docker builds
+│   └── debug/                 # Testing and debugging utilities
+├── debug-tools/                # Debugging utilities
+│   ├── auth-fix-plan.md       # Authentication troubleshooting
+│   ├── auth-test.html         # Standalone auth test page
+│   ├── test-auth.js           # Browser console auth test
+│   ├── minimal_backend.py     # Minimal API testing server
+│   ├── fix_database_schema.py # Database migration script
+│   └── debug_feature_flags.py # Feature flag debugging
+├── docs/                       # Documentation
+│   ├── MCP_SETUP.md           # MCP setup instructions
+│   ├── SELF-HOSTING.md        # Self-hosting guide
+│   └── tasks/                 # Completed task documentation
+│       ├── task.md            # Default Suna agent implementation
+│       └── ...                # Other task histories
 ├── backend/                    # Python/FastAPI backend services
 │   ├── api.py                 # Main FastAPI application entry
 │   ├── .env.example           # Environment variables template
 │   ├── requirements.txt       # Python dependencies
 │   ├── pyproject.toml         # Poetry configuration
-│   ├── Dockerfile             # Backend container config
+│   ├── Dockerfile             # Development backend container
 │   ├── run_agent_background.py # Background agent runner
 │   ├── agent/                 # Core agent system
 │   │   ├── api.py             # Agent API endpoints
@@ -78,6 +107,8 @@ suna/
 │       ├── test_custom_mcp.py # Custom MCP server tests
 │       └── test_mcp_use.py    # MCP usage tests
 ├── frontend/                   # Next.js/React application
+│   ├── Dockerfile             # Development frontend container
+│   ├── package.json           # Node.js dependencies
 │   ├── src/
 │   │   ├── app/               # Next.js App Router
 │   │   │   ├── (dashboard)/   # Dashboard routes
@@ -112,11 +143,8 @@ suna/
 │   │   ├── contexts/          # React contexts
 │   │   └── providers/         # Context providers
 │   └── public/                # Static assets
-├── supabase/                   # Supabase project configuration
-├── docs/                       # Project documentation
-├── setup.py                    # Automated setup script
-├── start.py                    # Development startup script
-├── docker-compose.yaml         # Container orchestration
+│       └── auth-test.html     # Authentication debugging page
+├── supabase/                   # Supabase project configuration  
 └── mise.toml                   # Development environment config
 ```
 
@@ -209,6 +237,28 @@ Suna is an open-source AI agent platform built by Quriosity with a modern, scala
 - **API Security**: Rate limiting and input validation
 - **Secret Management**: Environment-based configuration
 - **Network Security**: Controlled container networking
+
+## Project Organization (Updated 2025-07-07)
+
+### Clean Root Directory Structure
+- **Essential Files Only**: Root contains only core project files (documentation, setup scripts)
+- **Organized by Purpose**: Files grouped by function (docker/, scripts/, debug-tools/, docs/)
+- **Symlink Convenience**: `docker-compose.yaml` → `docker/docker-compose.yaml` for backward compatibility
+- **Clear Separation**: Development vs production Docker configurations in appropriate locations
+
+### Directory Organization Principles
+1. **docker/**: Production Docker configurations and orchestration
+2. **scripts/**: Utility scripts for development and deployment
+3. **debug-tools/**: Debugging utilities and troubleshooting tools
+4. **docs/**: Project documentation and completed task records
+5. **Component directories**: Each service has its own development Dockerfiles
+
+### File Placement Strategy
+- **Production builds**: `docker/Dockerfile.*` for deployment configurations
+- **Development builds**: `backend/Dockerfile`, `frontend/Dockerfile` for local development
+- **Utility scripts**: `scripts/` for startup, build, and automation scripts
+- **Debugging tools**: `debug-tools/` for authentication tests, database fixes, feature flag debugging
+- **Documentation**: `docs/` for guides, completed tasks, and project documentation
 
 ## Recent Infrastructure Improvements
 
