@@ -57,7 +57,9 @@
       "Bash(mkdir:*)",
       "Bash(mv:*)",
       "Bash(ln:*)",
-      "Bash(/home/zdhpe/suna/Q/start-all-services.sh:*)"
+      "Bash(/home/zdhpe/suna/Q/start-all-services.sh:*)",
+      "Bash(npm run build:*)",
+      "Bash(npm run lint)"
     ],
     "deny": []
   },

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 
-export const STORAGE_KEY_MEDIA_MODEL = 'suna-preferred-media-model';
+export const STORAGE_KEY_MEDIA_MODEL = 'q-preferred-media-model';
 export const DEFAULT_MEDIA_MODEL_ID = 'fal-ai/flux/dev';
 
 // Save media model preference to localStorage

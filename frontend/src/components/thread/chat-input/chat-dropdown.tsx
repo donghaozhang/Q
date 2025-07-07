@@ -24,7 +24,7 @@ const ChatDropdown = () => {
                 >
                     <div className="flex items-center gap-2">
                         <User size={16} />
-                        <span>Suna</span>
+                        <span>Q</span>
                         <ChevronDown size={14} className="opacity-50" />
                     </div>
                 </Button>
@@ -43,7 +43,7 @@ const ChatDropdown = () => {
                 >
                     <User size={18} />
                     <div className="flex flex-col">
-                        <span className="font-semibold text-sm">Suna</span>
+                        <span className="font-semibold text-sm">Q</span>
                         <span className="text-xs text-muted-foreground">Default</span>
                     </div>
                 </DropdownMenuItem>

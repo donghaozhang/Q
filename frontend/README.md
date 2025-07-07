@@ -1,4 +1,4 @@
-# Suna Frontend
+# Q Frontend
 
 ## Quick Setup
 

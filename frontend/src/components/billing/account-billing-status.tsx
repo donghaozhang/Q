@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { PricingSection } from '@/components/home/sections/pricing-section';
 import { isLocalMode } from '@/lib/config';
@@ -46,37 +46,11 @@ export default function AccountBillingStatus({ accountId, returnUrl }: Props) {
   const { session, isLoading: authLoading } = useAuth();
   const [error, setError] = useState<string | null>(null);
   const [isManaging, setIsManaging] = useState(false);
-<<<<<<< HEAD
   const {
     data: subscriptionData,
     isLoading,
     error: subscriptionQueryError,
   } = useSubscription();
-=======
-
-  useEffect(() => {
-    async function fetchSubscription() {
-      if (authLoading || !session) return;
-
-      try {
-        const data = await getMockSubscription(); // Use mock instead of real API
-        setSubscriptionData(data);
-        setError(null);
-      } catch (err) {
-        console.error('Failed to get subscription:', err);
-        setError(
-          err instanceof Error
-            ? err.message
-            : 'Failed to load subscription data',
-        );
-      } finally {
-        setIsLoading(false);
-      }
-    }
-
-    fetchSubscription();
-  }, [session, authLoading]);
->>>>>>> 19c18255 (fix: Replace all direct billing API calls with mocks to prevent 404 errors)
 
   const handleManageSubscription = async () => {
     try {

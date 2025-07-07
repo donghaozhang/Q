@@ -1,6 +1,6 @@
 export const siteConfig = {
   name: 'Quriosity',
-  url: 'https://suna.so',
+  url: 'https://q.so',
   description: 'Quriosity AI',
   links: {
     twitter: 'https://x.com/kortixai',
