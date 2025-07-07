@@ -419,45 +419,6 @@ export function ToolCallSidePanel({
 
   if (isLoading) {
     return (
-<<<<<<< HEAD
-      <div className="fixed inset-0 z-30 pointer-events-none">
-        <div className="p-4 h-full flex items-stretch justify-end pointer-events-auto">
-          <div
-            className={cn(
-              'border rounded-2xl flex flex-col shadow-2xl bg-background',
-              isMobile
-                ? 'w-full'
-                : 'w-[90%] sm:w-[450px] md:w-[500px] lg:w-[550px] xl:w-[650px]',
-            )}
-          >
-            <div className="flex-1 flex flex-col overflow-hidden">
-              <div className="flex flex-col h-full">
-                <div className="pt-4 pl-4 pr-4">
-                  <div className="flex items-center justify-between">
-                    <div className="ml-2 flex items-center gap-2">
-                      <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
-                        {agentName ? `${agentName}'s Computer` : 'Suna\'s Computer'}
-                      </h2>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={handleClose}
-                      className="h-8 w-8"
-                      title="Minimize to floating preview"
-                    >
-                      <Minimize2 className="h-4 w-4" />
-                    </Button>
-                  </div>
-                </div>
-                <div className="flex-1 p-4 overflow-auto">
-                  <div className="space-y-4">
-                    <Skeleton className="h-8 w-32" />
-                    <Skeleton className="h-20 w-full rounded-md" />
-                    <Skeleton className="h-40 w-full rounded-md" />
-                    <Skeleton className="h-20 w-full rounded-md" />
-                  </div>
-=======
       <div
         className={cn(
           'fixed inset-y-0 right-0 border-l flex flex-col z-30 h-screen transition-all duration-200 ease-in-out',
@@ -476,7 +437,6 @@ export function ToolCallSidePanel({
                   <h2 className="text-md font-medium text-zinc-900 dark:text-zinc-100">
                     {agentName ? `${agentName}'s Computer` : 'Q\'s Computer'}
                   </h2>
->>>>>>> 916245ae (feat(branding): Update computer panel title from Suna to Q)
                 </div>
               </div>
             </div>
@@ -540,14 +500,9 @@ export function ToolCallSidePanel({
             <div className="pt-4 pl-4 pr-4">
               <div className="flex items-center justify-between">
                 <div className="ml-2 flex items-center gap-2">
-<<<<<<< HEAD
-                  <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-100">
-                    {agentName ? `${agentName}'s Computer` : 'Suna\'s Computer'}
-=======
                   <Computer className="h-4 w-4" />
                   <h2 className="text-md font-medium text-zinc-900 dark:text-zinc-100">
                     {agentName ? `${agentName}'s Computer` : 'Q\'s Computer'}
->>>>>>> 916245ae (feat(branding): Update computer panel title from Suna to Q)
                   </h2>
                 </div>
                 <div className="flex items-center gap-2">
