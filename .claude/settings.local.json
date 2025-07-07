@@ -55,7 +55,8 @@
       "Bash(timeout:*)",
       "mcp__supabase__list_tables",
       "Bash(mkdir:*)",
-      "Bash(mv:*)"
+      "Bash(mv:*)",
+      "Bash(ln:*)"
     ],
     "deny": []
   },
