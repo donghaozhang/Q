@@ -56,7 +56,8 @@
       "mcp__supabase__list_tables",
       "Bash(mkdir:*)",
       "Bash(mv:*)",
-      "Bash(ln:*)"
+      "Bash(ln:*)",
+      "Bash(/home/zdhpe/suna/Q/start-all-services.sh:*)"
     ],
     "deny": []
   },

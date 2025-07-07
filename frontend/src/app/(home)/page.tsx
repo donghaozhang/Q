@@ -10,7 +10,7 @@ import { PricingSection } from '@/components/home/sections/pricing-section';
 import { QuriositShowcase } from '@/components/home/sections/quriosity-showcase';
 import { UseCasesSection } from '@/components/home/sections/use-cases-section';
 import { ModalProviders } from '@/providers/modal-providers';
-import { HeroVideoSection } from '@/components/home/sections/hero-video-section';
+// import { HeroVideoSection } from '@/components/home/sections/hero-video-section';
 
 export default function Home() {
   return (
@@ -30,9 +30,9 @@ export default function Home() {
           <div className='flex flex-col items-center px-4'>
             <PricingSection />
           </div>
-          <div className="mt-12 pb-12 mx-auto">
+          {/* <div className="mt-12 pb-12 mx-auto">
             <HeroVideoSection />
-          </div>
+          </div> */}
           {/* <TestimonialSection /> */}
           {/* <FAQSection /> */}
           <CTASection />
