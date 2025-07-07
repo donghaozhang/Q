@@ -106,7 +106,7 @@ class FalMediaTool(SandboxToolsBase):
             
             # Create images directory if it doesn't exist
             images_dir = f"{self.workspace_path}/generated_images"
-            self.sandbox.fs.create_folder(images_dir, "755")
+            await self.sandbox.fs.create_folder(images_dir)
             
             # Generate filename with timestamp and model info
             timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -123,7 +123,7 @@ class FalMediaTool(SandboxToolsBase):
                         image_data = await response.read()
                         
                         # Save to workspace
-                        self.sandbox.fs.upload_file(file_path, image_data)
+                        await self.sandbox.fs.upload_file(image_data, file_path)
                         
                         # Return relative path for display
                         relative_path = f"generated_images/{filename}"
