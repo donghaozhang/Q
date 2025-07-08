@@ -553,6 +553,11 @@ async def run_agent(
 
                                 # The actual text content is nested within
                                 assistant_text = assistant_content_json.get('content', '')
+                                # Ensure assistant_text is a string before concatenation
+                                if isinstance(assistant_text, list):
+                                    assistant_text = ''.join(str(item) for item in assistant_text)
+                                elif not isinstance(assistant_text, str):
+                                    assistant_text = str(assistant_text)
                                 full_response += assistant_text
                                 if isinstance(assistant_text, str):
                                     if '</ask>' in assistant_text or '</complete>' in assistant_text or '</web-browser-takeover>' in assistant_text:
